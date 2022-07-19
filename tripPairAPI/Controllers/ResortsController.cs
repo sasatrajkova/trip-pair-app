@@ -19,7 +19,7 @@ public class ResortsController : Controller
     [HttpGet]
     public async Task<IActionResult> GetAllResorts()
     {
-        return Ok(await _db.Resorts.ToListAsync());
+        return Ok(await _db.Resorts.Include(r => r.Location).ToListAsync());
     }
 
     [HttpGet]

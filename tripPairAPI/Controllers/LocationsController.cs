@@ -32,7 +32,7 @@ public class LocationsController : Controller
     
     [HttpPut]
     [Route("{id:int}")]
-    public async Task<IActionResult> UpdateLocation([FromRoute] int id, LocationUpdateDto updatedLocation)
+    public async Task<IActionResult> UpdateLocation([FromRoute] int id, LocationDto updatedLocation)
     {
         var existingLocation = await _db.Locations.FindAsync(id);
         if (existingLocation == null)
@@ -48,7 +48,7 @@ public class LocationsController : Controller
     }
     
     [HttpPost]
-    public async Task<IActionResult> CreateLocation(LocationCreateDto newLocation)
+    public async Task<IActionResult> CreateLocation(LocationDto newLocation)
     {
         var location = new Location()
         {
