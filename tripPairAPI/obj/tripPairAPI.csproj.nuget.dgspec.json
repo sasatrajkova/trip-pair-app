@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\satr\\Documents\\Repos\\tripPairAPI\\tripPairAPI\\tripPairAPI.csproj": {}
+    "C:\\Users\\satr\\Documents\\Repos\\TripPairAPI\\tripPairAPI\\tripPairAPI.csproj": {}
   },
   "projects": {
-    "C:\\Users\\satr\\Documents\\Repos\\tripPairAPI\\tripPairAPI\\tripPairAPI.csproj": {
+    "C:\\Users\\satr\\Documents\\Repos\\TripPairAPI\\tripPairAPI\\tripPairAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\satr\\Documents\\Repos\\tripPairAPI\\tripPairAPI\\tripPairAPI.csproj",
+        "projectUniqueName": "C:\\Users\\satr\\Documents\\Repos\\TripPairAPI\\tripPairAPI\\tripPairAPI.csproj",
         "projectName": "tripPairAPI",
-        "projectPath": "C:\\Users\\satr\\Documents\\Repos\\tripPairAPI\\tripPairAPI\\tripPairAPI.csproj",
+        "projectPath": "C:\\Users\\satr\\Documents\\Repos\\TripPairAPI\\tripPairAPI\\tripPairAPI.csproj",
         "packagesPath": "C:\\Users\\satr\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\satr\\Documents\\Repos\\tripPairAPI\\tripPairAPI\\obj\\",
+        "outputPath": "C:\\Users\\satr\\Documents\\Repos\\TripPairAPI\\tripPairAPI\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\satr\\AppData\\Roaming\\NuGet\\NuGet.Config",

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using tripPairAPI.Data;
 
@@ -10,9 +11,11 @@ using tripPairAPI.Data;
 namespace tripPairAPI.Migrations
 {
     [DbContext(typeof(TripPairDbContext))]
-    partial class TripPairDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220719140621_Adjust Location name column in Resort")]
+    partial class AdjustLocationnamecolumninResort
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

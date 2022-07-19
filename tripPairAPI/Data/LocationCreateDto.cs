@@ -1,9 +1,9 @@
 ﻿namespace tripPairAPI.Data;
 
-public class LocationDto
+public class LocationCreateDto
 {
-    public int Id { get; set; }
     public string Name { get; set; }
     public string GoodMonthsDescription { get; set; }
     public IEnumerable<string> Months { get; set; }
+
 }

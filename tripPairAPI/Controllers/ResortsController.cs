@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Azure;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using tripPairAPI.Data;
 using tripPairAPI.Models;
@@ -26,7 +27,7 @@ public class ResortsController : Controller
     public async Task<IActionResult> GetResortBySearch(string searchTerm)
     {
         var filteredResorts = _db.Resorts.Where(r => r.Name.ToLower().Contains(searchTerm.ToLower())
-                                                     || r.Location.ToLower().Contains(searchTerm.ToLower())
+                                                     || r.LocationName.ToLower().Contains(searchTerm.ToLower())
                                                      || r.Climate.ToLower().Contains(searchTerm)).ToListAsync();
         return Ok(await filteredResorts);
     }
@@ -34,12 +35,18 @@ public class ResortsController : Controller
     [HttpPost]
     public async Task<IActionResult> CreateResort(ResortDto newResort)
     {
+        var existingLocation = await _db.Locations.FindAsync(newResort.LocationName);
+
+        if (existingLocation == null)
+        {
+            return NotFound();
+        }
         var resort = new Resort()
         {
             Name = newResort.Name,
             Climate = newResort.Climate,
             Image = newResort.Image,
-            Location = newResort.Location
+            LocationName = newResort.LocationName
         };
         await _db.Resorts.AddAsync(resort);
         await _db.SaveChangesAsync();
