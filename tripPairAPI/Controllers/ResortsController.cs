@@ -26,8 +26,8 @@ public class ResortsController : Controller
     [Route("{searchTerm}")]
     public async Task<IActionResult> GetResortBySearch(string searchTerm)
     {
-        var filteredResorts = _db.Resorts.Where(r => r.Name.ToLower().Contains(searchTerm.ToLower())
-                                                     || r.LocationName.ToLower().Contains(searchTerm.ToLower())
+        var filteredResorts = _db.Resorts.Include(r => r.Location).Where(r => r.Name.ToLower().Contains(searchTerm.ToLower())
+                                                     || r.Location.Name.ToLower().Contains(searchTerm.ToLower())
                                                      || r.Climate.ToLower().Contains(searchTerm)).ToListAsync();
         return Ok(await filteredResorts);
     }
@@ -35,7 +35,7 @@ public class ResortsController : Controller
     [HttpPost]
     public async Task<IActionResult> CreateResort(ResortDto newResort)
     {
-        var existingLocation = await _db.Locations.FindAsync(newResort.LocationName);
+        var existingLocation = await _db.Locations.FindAsync(newResort.LocationId);
 
         if (existingLocation == null)
         {
@@ -46,7 +46,7 @@ public class ResortsController : Controller
             Name = newResort.Name,
             Climate = newResort.Climate,
             Image = newResort.Image,
-            LocationName = newResort.LocationName
+            LocationId = newResort.LocationId
         };
         await _db.Resorts.AddAsync(resort);
         await _db.SaveChangesAsync();
