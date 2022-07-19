@@ -8,5 +8,5 @@ public class TripPairDbContext : DbContext
     public TripPairDbContext(DbContextOptions<TripPairDbContext> options)
         : base(options) {}
     public DbSet<Resort> Resorts { get; set; }
-    
+    public DbSet<Location> Locations { get; set; }
 }

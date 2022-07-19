@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "z9wLGWn/9RdiM8ai0cCSjVTC9PuWchleyHdktyYkZ1XK4Bkvl4nk2DJc19R6PxaGP6xpzKLsQGTmcHcUlmu/Bw==",
+  "dgSpecHash": "ieSDwyhccmmQqWeVkbc3dTRCUBIWdQlzU98wbpXR6GD4RkRYKwC8gPzuGWsQJ33v9uSqFKicKneFeOIluz1lkQ==",
   "success": true,
-  "projectFilePath": "C:\\Users\\satr\\Documents\\Repos\\TripPairAPI\\tripPairAPI\\tripPairAPI.csproj",
+  "projectFilePath": "C:\\Users\\satr\\Documents\\Repos\\tripPairAPI\\tripPairAPI\\tripPairAPI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\satr\\.nuget\\packages\\azure.core\\1.20.0\\azure.core.1.20.0.nupkg.sha512",
     "C:\\Users\\satr\\.nuget\\packages\\azure.identity\\1.5.0\\azure.identity.1.5.0.nupkg.sha512",
