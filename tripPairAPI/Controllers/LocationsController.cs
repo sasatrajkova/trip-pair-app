@@ -54,7 +54,6 @@ public class LocationsController : Controller
         {
             Name = newLocation.Name,
             GoodMonthsDescription = newLocation.GoodMonthsDescription
-            
         };
         await _db.Locations.AddAsync(location);
         await _db.SaveChangesAsync();

@@ -9,4 +9,6 @@ public class TripPairDbContext : DbContext
         : base(options) {}
     public DbSet<Resort> Resorts { get; set; }
     public DbSet<Location> Locations { get; set; }
+    public DbSet<Month> Months { get; set; }
+    public DbSet<LocationMonth> LocationMonths { get; set; }
 }
