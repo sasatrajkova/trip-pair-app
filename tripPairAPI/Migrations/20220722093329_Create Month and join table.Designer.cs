@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using tripPairAPI.Data;
 
@@ -10,9 +11,11 @@ using tripPairAPI.Data;
 namespace tripPairAPI.Migrations
 {
     [DbContext(typeof(TripPairDbContext))]
-    partial class TripPairDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220722093329_Create Month and join table")]
+    partial class CreateMonthandjointable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -20,6 +23,21 @@ namespace tripPairAPI.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+
+            modelBuilder.Entity("LocationMonth", b =>
+                {
+                    b.Property<int>("LocationsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MonthsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("LocationsId", "MonthsId");
+
+                    b.HasIndex("MonthsId");
+
+                    b.ToTable("LocationMonth");
+                });
 
             modelBuilder.Entity("tripPairAPI.Models.Location", b =>
                 {
@@ -110,6 +128,21 @@ namespace tripPairAPI.Migrations
                     b.HasIndex("LocationId");
 
                     b.ToTable("Resorts");
+                });
+
+            modelBuilder.Entity("LocationMonth", b =>
+                {
+                    b.HasOne("tripPairAPI.Models.Location", null)
+                        .WithMany()
+                        .HasForeignKey("LocationsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("tripPairAPI.Models.Month", null)
+                        .WithMany()
+                        .HasForeignKey("MonthsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("tripPairAPI.Models.LocationMonth", b =>
