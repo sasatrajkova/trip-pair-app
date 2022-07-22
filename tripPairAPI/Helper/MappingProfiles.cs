@@ -10,5 +10,7 @@ public class MappingProfiles : Profile
     {
         CreateMap<ResortDto, Resort>();
         CreateMap<LocationDto, Location>();
+        CreateMap<Location, LocationDto>();
+        CreateMap<Month, MonthDto>();
     }
 }

@@ -11,10 +11,12 @@ namespace tripPairAPI.Controllers;
 public class LocationsController : Controller
 {
     private readonly ILocationRepository _locationRepository;
+    private readonly IMapper _mapper;
 
     public LocationsController( ILocationRepository locationRepository, IMapper mapper)
     {
         _locationRepository = locationRepository;
+        _mapper = mapper;
     }
     
     [HttpGet]
@@ -34,6 +36,17 @@ public class LocationsController : Controller
         return Ok(await _locationRepository.GetLocationById(id));
     }
     
+    [HttpGet]
+    [ProducesResponseType(200, Type = typeof(IEnumerable<Month>))]
+    [ProducesResponseType(404)]
+    [Route("{locationId:int}/Months")]
+    public async Task<IActionResult> GetLocationMonths([FromRoute] int locationId)
+    {
+        if (!_locationRepository.LocationExists(locationId)) return NotFound();
+        var locationMonths = _mapper.Map<List<MonthDto>>(await _locationRepository.GetLocationMonths(locationId));
+        return Ok(locationMonths);
+    }
+
     [HttpPut]
     [ProducesResponseType(200, Type = typeof(Location))]
     [ProducesResponseType(404)]
