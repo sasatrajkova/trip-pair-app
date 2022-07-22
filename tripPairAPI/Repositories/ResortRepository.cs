@@ -16,7 +16,7 @@ public class ResortRepository : IResortRepository
 
     public async Task<IEnumerable<Resort>> GetAllResorts()
     {
-        return await _db.Resorts.Include(r => r.Location).ToListAsync();
+        return await _db.Resorts.ToListAsync();
     }
 
     public async Task<IEnumerable<Resort>> GetResortsBySearch(string searchTerm)
@@ -25,6 +25,12 @@ public class ResortRepository : IResortRepository
                                                                               || r.Location.Name.ToLower().Contains(searchTerm.ToLower())
                                                                               || r.Climate.ToLower().Contains(searchTerm)).ToListAsync();
         return await filteredResorts;
+    }
+
+    public async Task<Resort> GetResort(int id)
+    {
+        var resort = await _db.Resorts.FindAsync(id);
+        return resort;
     }
 
     public async Task<Resort> CreateResort(ResortDto newResort)
@@ -51,5 +57,10 @@ public class ResortRepository : IResortRepository
         _db.Resorts.Remove(resortToDelete);
         await _db.SaveChangesAsync();
         return resortToDelete;
+    }
+
+    public bool ResortExists(int id)
+    {
+        return _db.Resorts.Any(r => r.Id == id);
     }
 }

@@ -33,16 +33,28 @@ public class ResortsController : Controller
         var filteredResorts = _resortRepository.GetResortsBySearch(searchTerm).Result;
         return Ok(filteredResorts);
     }
+
+    [HttpGet]
+    [ProducesResponseType(200, Type = typeof(IEnumerable<Resort>))]
+    [ProducesResponseType(404)]
+    [Route("{id:int}")]
+    public async Task<IActionResult> GetResort(int id)
+    {
+        var resort = await _resortRepository.GetResort(id);
+        if (!_resortRepository.ResortExists(id)) return NotFound();
+        return Ok(resort);
+    }
     
     [HttpPost]
     [ProducesResponseType(200, Type = typeof(Resort))]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(404)]
     public async Task<IActionResult> CreateResort(ResortDto newResort)
     {
-        //TODO: replace with location repository
         var existingLocation = await _db.Locations.FindAsync(newResort.LocationId);
 
-        //TODO: delete after integrated with frontend
         if (existingLocation == null) return NotFound();
+        if (!ModelState.IsValid) return BadRequest();
         
         var resort = await _resortRepository.CreateResort(newResort);
         return Ok(resort);
@@ -50,13 +62,13 @@ public class ResortsController : Controller
 
     [HttpDelete]
     [ProducesResponseType(200, Type = typeof(Resort))]
+    [ProducesResponseType(404)]
     [Route("{id:int}")]
     public async Task<IActionResult> DeleteResort([FromRoute] int id)
     {
         var deletedResort = await _resortRepository.DeleteResort(id);
         
-        //TODO: delete after integrated with frontend
-        if (deletedResort == null) return NotFound();
+        if (!_resortRepository.ResortExists(id)) return NotFound();
 
         return Ok(deletedResort);
     }
