@@ -7,6 +7,9 @@
   <component name="ChangeListManager">
     <list default="true" id="c31c63a7-d9c7-4774-a71c-5f447e889fb7" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.tripPairAPI/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.tripPairAPI/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tripPairAPI/Controllers/ResortsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/tripPairAPI/Controllers/ResortsController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tripPairAPI/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/tripPairAPI/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tripPairAPI/tripPairAPI.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/tripPairAPI/tripPairAPI.csproj" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

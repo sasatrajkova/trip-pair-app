@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using tripPairAPI.Data;
 using tripPairAPI.Interfaces;
 using tripPairAPI.Models;
@@ -11,17 +12,19 @@ public class ResortsController : Controller
 {
     private readonly TripPairDbContext _db;
     private readonly IResortRepository _resortRepository;
+    private readonly IMapper _mapper;
 
-    public ResortsController(TripPairDbContext db, IResortRepository resortRepository)
+    public ResortsController(TripPairDbContext db, IResortRepository resortRepository, IMapper mapper)
     {
         _db = db;
         _resortRepository = resortRepository;
+        _mapper = mapper;
     }
     [HttpGet]
     [ProducesResponseType(200, Type = typeof(IEnumerable<Resort>))]
     public IActionResult GetAllResorts()
     {
-        var resorts = _resortRepository.GetAllResorts().Result;
+        var resorts = _mapper.Map<List<ResortDto>>(_resortRepository.GetAllResorts().Result);
         return Ok(resorts);
     }
 
