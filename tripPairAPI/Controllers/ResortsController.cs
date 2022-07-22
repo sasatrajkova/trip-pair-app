@@ -24,7 +24,7 @@ public class ResortsController : Controller
     [ProducesResponseType(200, Type = typeof(IEnumerable<Resort>))]
     public IActionResult GetAllResorts()
     {
-        var resorts = _mapper.Map<List<ResortDto>>(_resortRepository.GetAllResorts().Result);
+        var resorts = _resortRepository.GetAllResorts().Result;
         return Ok(resorts);
     }
 
@@ -43,8 +43,9 @@ public class ResortsController : Controller
     [Route("{id:int}")]
     public async Task<IActionResult> GetResort(int id)
     {
-        var resort = await _resortRepository.GetResort(id);
         if (!_resortRepository.ResortExists(id)) return NotFound();
+        
+        var resort = await _resortRepository.GetResort(id);
         return Ok(resort);
     }
     
@@ -69,10 +70,9 @@ public class ResortsController : Controller
     [Route("{id:int}")]
     public async Task<IActionResult> DeleteResort([FromRoute] int id)
     {
-        var deletedResort = await _resortRepository.DeleteResort(id);
-        
         if (!_resortRepository.ResortExists(id)) return NotFound();
-
+        
+        var deletedResort = await _resortRepository.DeleteResort(id);
         return Ok(deletedResort);
     }
 }

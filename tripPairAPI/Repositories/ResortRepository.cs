@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using tripPairAPI.Data;
 using tripPairAPI.Interfaces;
@@ -8,10 +9,12 @@ namespace tripPairAPI.Repositories;
 public class ResortRepository : IResortRepository
 {
     private readonly TripPairDbContext _db;
-    
-    public ResortRepository(TripPairDbContext db)
+    private readonly IMapper _mapper;
+
+    public ResortRepository(TripPairDbContext db, IMapper mapper)
     {
         _db = db;
+        _mapper = mapper;
     }
 
     public async Task<IEnumerable<Resort>> GetAllResorts()
@@ -35,13 +38,7 @@ public class ResortRepository : IResortRepository
 
     public async Task<Resort> CreateResort(ResortDto newResort)
     {
-        var resort = new Resort()
-        {
-            Name = newResort.Name,
-            Climate = newResort.Climate,
-            Image = newResort.Image,
-            LocationId = newResort.LocationId
-        };
+        var resort = _mapper.Map<Resort>(newResort);
         await _db.Resorts.AddAsync(resort);
         await _db.SaveChangesAsync();
         return resort;
@@ -51,7 +48,6 @@ public class ResortRepository : IResortRepository
     {
         var resortToDelete = await _db.Resorts.FindAsync(id);
         
-        //TODO: delete after integrated with frontend
         if (resortToDelete == null) return null;
 
         _db.Resorts.Remove(resortToDelete);

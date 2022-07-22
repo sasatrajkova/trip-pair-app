@@ -8,6 +8,6 @@ public class MappingProfiles : Profile
 {
     public MappingProfiles()
     {
-        CreateMap<Resort, ResortDto>();
+        CreateMap<ResortDto, Resort>();
     }
 }
