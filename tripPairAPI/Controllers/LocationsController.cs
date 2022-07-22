@@ -23,7 +23,17 @@ public class LocationsController : Controller
     {
         return Ok(await _locationRepository.GetAllLocations());
     }
-
+    
+    [HttpGet]
+    [ProducesResponseType(200, Type = typeof(IEnumerable<Location>))]
+    [ProducesResponseType(404)]
+    [Route("{id:int}")]
+    public async Task<IActionResult> GetLocation([FromRoute] int id)
+    {
+        if (!_locationRepository.LocationExists(id)) return NotFound(); 
+        return Ok(await _locationRepository.GetLocationById(id));
+    }
+    
     [HttpPut]
     [ProducesResponseType(200, Type = typeof(Location))]
     [ProducesResponseType(404)]

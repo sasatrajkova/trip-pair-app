@@ -21,10 +21,15 @@ public class LocationRepository : ILocationRepository
         return await _db.Locations.ToListAsync();
     }
 
+    public async Task<Location> GetLocationById(int id)
+    {
+        var location = await _db.Locations.FindAsync(id);
+        return location;
+    }
+
     public async Task<Location> UpdateLocation(int id, LocationDto locationToUpdate)
     {
         var updatedLocation = await _db.Locations.FindAsync(id);
-        
         if (updatedLocation == null) return null;
         
         updatedLocation.Name = locationToUpdate.Name;
