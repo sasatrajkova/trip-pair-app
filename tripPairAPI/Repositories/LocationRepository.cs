@@ -18,7 +18,7 @@ public class LocationRepository : ILocationRepository
     }
     public async Task<IEnumerable<Location>> GetAllLocations()
     {
-        return await _db.Locations.ToListAsync();
+        return await _db.Locations.Include(l => l.LocationMonths).ThenInclude(lm => lm.Month).ToListAsync();
     }
 
     public async Task<Location> GetLocationById(int id)

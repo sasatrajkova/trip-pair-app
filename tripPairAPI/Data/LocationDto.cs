@@ -6,5 +6,6 @@ public class LocationDto
 {
     public string Name { get; set; }
     public string GoodMonthsDescription { get; set; }
+    public IEnumerable<LocationMonth> LocationMonths { get; set; }
 
 }
