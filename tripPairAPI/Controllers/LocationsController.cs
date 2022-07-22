@@ -20,20 +20,22 @@ public class LocationsController : Controller
     }
     
     [HttpGet]
-    [ProducesResponseType(200, Type = typeof(IEnumerable<Location>))]
+    [ProducesResponseType(200, Type = typeof(IEnumerable<LocationDto>))]
     public async Task<IActionResult> GetAllLocations()
     {
-        return Ok(await _locationRepository.GetAllLocations());
+        var locations = _mapper.Map<List<LocationDto>>(await _locationRepository.GetAllLocations());
+        return Ok(locations);
     }
     
     [HttpGet]
-    [ProducesResponseType(200, Type = typeof(IEnumerable<Location>))]
+    [ProducesResponseType(200, Type = typeof(IEnumerable<LocationDto>))]
     [ProducesResponseType(404)]
     [Route("{id:int}")]
     public async Task<IActionResult> GetLocation([FromRoute] int id)
     {
-        if (!_locationRepository.LocationExists(id)) return NotFound(); 
-        return Ok(await _locationRepository.GetLocationById(id));
+        if (!_locationRepository.LocationExists(id)) return NotFound();
+        var location = _mapper.Map <LocationDto>(await _locationRepository.GetLocationById(id));
+        return Ok(location);
     }
     
     [HttpGet]
@@ -51,7 +53,7 @@ public class LocationsController : Controller
     [ProducesResponseType(200, Type = typeof(Location))]
     [ProducesResponseType(404)]
     [Route("{id:int}")]
-    public async Task<IActionResult> UpdateLocation([FromRoute] int id, LocationDto locationToUpdate)
+    public async Task<IActionResult> UpdateLocation([FromRoute] int id, LocationCreateDto locationToUpdate)
     {
         if (!_locationRepository.LocationExists(id)) return NotFound();
         var updatedLocation = _locationRepository.UpdateLocation(id, locationToUpdate);
@@ -61,10 +63,10 @@ public class LocationsController : Controller
     [HttpPost]
     [ProducesResponseType(200, Type = typeof(Location))]
     [ProducesResponseType(400)]
-    public async Task<IActionResult> CreateLocation(LocationDto locationToCreate)
+    public async Task<IActionResult> CreateLocation(LocationCreateDto locationTo)
     {
         if (!ModelState.IsValid) return BadRequest();
-        var newLocation = await _locationRepository.CreateLocation(locationToCreate);
+        var newLocation = await _locationRepository.CreateLocation(locationTo);
         return Ok(newLocation);
     }
 

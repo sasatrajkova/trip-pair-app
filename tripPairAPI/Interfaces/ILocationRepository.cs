@@ -8,8 +8,8 @@ public interface ILocationRepository
     Task<IEnumerable<Location>> GetAllLocations();
     Task<Location> GetLocationById(int id);
     Task<IEnumerable<Month>> GetLocationMonths(int locationId);
-    Task<Location> UpdateLocation(int id, LocationDto locationToUpdate);
-    Task<Location> CreateLocation(LocationDto locationToCreate);
+    Task<Location> UpdateLocation(int id, LocationCreateDto locationToUpdate);
+    Task<Location> CreateLocation(LocationCreateDto locationToCreate);
     Task<Location> DeleteLocation(int id);
     bool LocationExists(int id);
 }

@@ -23,7 +23,7 @@ public class LocationRepository : ILocationRepository
 
     public async Task<Location> GetLocationById(int id)
     {
-        var location = await _db.Locations.FindAsync(id);
+        var location = await _db.Locations.Include(l => l.LocationMonths).ThenInclude(lm => lm.Month).Where(l => l.Id == id).FirstOrDefaultAsync();
         return location;
     }
 
@@ -32,8 +32,9 @@ public class LocationRepository : ILocationRepository
         return await _db.LocationMonths.Where(lm => lm.LocationId == locationId).Select(lm => lm.Month).ToListAsync();
     }
     
-    public async Task<Location> UpdateLocation(int id, LocationDto locationToUpdate)
+    public async Task<Location> UpdateLocation(int id, LocationCreateDto locationToUpdate)
     {
+        //TODO: Missing mapping
         var updatedLocation = await _db.Locations.FindAsync(id);
         if (updatedLocation == null) return null;
         
@@ -44,8 +45,9 @@ public class LocationRepository : ILocationRepository
         return updatedLocation;
     }
 
-    public async Task<Location> CreateLocation(LocationDto locationToCreate)
+    public async Task<Location> CreateLocation(LocationCreateDto locationToCreate)
     {
+        //TODO: Missing mapping and addition to table LocationMonths
         var newLocation = _mapper.Map<Location>(locationToCreate);
         await _db.Locations.AddAsync(newLocation);
         await _db.SaveChangesAsync();

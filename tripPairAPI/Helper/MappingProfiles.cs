@@ -12,5 +12,8 @@ public class MappingProfiles : Profile
         CreateMap<LocationDto, Location>();
         CreateMap<Location, LocationDto>();
         CreateMap<Month, MonthDto>();
+        CreateMap<LocationMonth, LocationMonthDto>();
+        CreateMap<LocationMonthDto, LocationMonth>();
+
     }
 }
