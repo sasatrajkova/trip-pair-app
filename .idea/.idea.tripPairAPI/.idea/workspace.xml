@@ -5,7 +5,9 @@
     <projectFile profileName="IIS Express">tripPairAPI/tripPairAPI.csproj</projectFile>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c31c63a7-d9c7-4774-a71c-5f447e889fb7" name="Changes" comment="" />
+    <list default="true" id="c31c63a7-d9c7-4774-a71c-5f447e889fb7" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.tripPairAPI/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.tripPairAPI/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -18,11 +20,11 @@
     <option name="stateVersion" value="1" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "nodejs_package_manager_path": "npm"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="tripPairAPI" type="LaunchSettings" factoryName=".NET Launch Settings Profile" temporary="true">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/tripPairAPI/tripPairAPI.csproj" />
@@ -66,4 +68,15 @@
   </component>
   <component name="UnityCheckinConfiguration" checkUnsavedScenes="false" />
   <component name="UnityUnitTestConfiguration" currentTestLauncher="Both" />
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
 </project>
