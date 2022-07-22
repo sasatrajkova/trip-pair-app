@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using tripPairAPI.Data;
+using tripPairAPI.Interfaces;
 using tripPairAPI.Models;
 
 namespace tripPairAPI.Controllers;
@@ -9,54 +10,49 @@ namespace tripPairAPI.Controllers;
 [Route("api/[controller]")]
 public class LocationsController : Controller
 {
-    private readonly TripPairDbContext _db;
+    private readonly ILocationRepository _locationRepository;
 
-    public LocationsController(TripPairDbContext db)
+    public LocationsController( ILocationRepository locationRepository, IMapper mapper)
     {
-        _db = db;
+        _locationRepository = locationRepository;
     }
     
     [HttpGet]
+    [ProducesResponseType(200, Type = typeof(IEnumerable<Location>))]
     public async Task<IActionResult> GetAllLocations()
     {
-        return Ok(await _db.Locations.ToListAsync());
+        return Ok(await _locationRepository.GetAllLocations());
     }
-    
-    [HttpGet]
-    [Route("{name}")]
-    public async Task<IActionResult> GetLocationByName([FromRoute] string name)
-    {
-        var location = _db.Locations.Where(l => l.Name.ToLower().Contains(name.ToLower())).FirstOrDefaultAsync();
-        return Ok(await location);
-    }
-    
-    [HttpPut]
-    [Route("{id:int}")]
-    public async Task<IActionResult> UpdateLocation([FromRoute] int id, LocationDto updatedLocation)
-    {
-        var existingLocation = await _db.Locations.FindAsync(id);
-        if (existingLocation == null)
-        {
-            return NotFound();
-        }
 
-        existingLocation.Name = updatedLocation.Name;
-        existingLocation.GoodMonthsDescription = updatedLocation.GoodMonthsDescription;
-        
-        await _db.SaveChangesAsync();
-        return Ok(existingLocation);
+    [HttpPut]
+    [ProducesResponseType(200, Type = typeof(Location))]
+    [ProducesResponseType(404)]
+    [Route("{id:int}")]
+    public async Task<IActionResult> UpdateLocation([FromRoute] int id, LocationDto locationToUpdate)
+    {
+        if (!_locationRepository.LocationExists(id)) return NotFound();
+        var updatedLocation = _locationRepository.UpdateLocation(id, locationToUpdate);
+        return Ok(await updatedLocation);
     }
     
     [HttpPost]
-    public async Task<IActionResult> CreateLocation(LocationDto newLocation)
+    [ProducesResponseType(200, Type = typeof(Location))]
+    [ProducesResponseType(400)]
+    public async Task<IActionResult> CreateLocation(LocationDto locationToCreate)
     {
-        var location = new Location()
-        {
-            Name = newLocation.Name,
-            GoodMonthsDescription = newLocation.GoodMonthsDescription
-        };
-        await _db.Locations.AddAsync(location);
-        await _db.SaveChangesAsync();
-        return Ok(location);
+        if (!ModelState.IsValid) return BadRequest();
+        var newLocation = await _locationRepository.CreateLocation(locationToCreate);
+        return Ok(newLocation);
     }
+
+    [HttpDelete]
+    [ProducesResponseType(200, Type = typeof(Location))]
+    [ProducesResponseType(404)]
+    [Route("{id:int}")]
+    public async Task<IActionResult> DeleteLocation([FromRoute] int id)
+    {
+        if (!_locationRepository.LocationExists(id)) return NotFound();
+        return Ok(await _locationRepository.DeleteLocation(id));
+    }
+    
 }
