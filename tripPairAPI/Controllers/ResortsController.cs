@@ -1,7 +1,6 @@
-﻿using Azure;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
 using tripPairAPI.Data;
+using tripPairAPI.Interfaces;
 using tripPairAPI.Models;
 
 namespace tripPairAPI.Controllers;
@@ -11,58 +10,54 @@ namespace tripPairAPI.Controllers;
 public class ResortsController : Controller
 {
     private readonly TripPairDbContext _db;
+    private readonly IResortRepository _resortRepository;
 
-    public ResortsController(TripPairDbContext db)
+    public ResortsController(TripPairDbContext db, IResortRepository resortRepository)
     {
         _db = db;
+        _resortRepository = resortRepository;
     }
     [HttpGet]
-    public async Task<IActionResult> GetAllResorts()
+    [ProducesResponseType(200, Type = typeof(IEnumerable<Resort>))]
+    public IActionResult GetAllResorts()
     {
-        return Ok(await _db.Resorts.Include(r => r.Location).ToListAsync());
+        var resorts = _resortRepository.GetAllResorts().Result;
+        return Ok(resorts);
     }
 
     [HttpGet]
+    [ProducesResponseType(200, Type = typeof(IEnumerable<Resort>))]
     [Route("{searchTerm}")]
-    public async Task<IActionResult> GetResortBySearch(string searchTerm)
+    public IActionResult GetResortsBySearch(string searchTerm)
     {
-        var filteredResorts = _db.Resorts.Include(r => r.Location).Where(r => r.Name.ToLower().Contains(searchTerm.ToLower())
-                                                     || r.Location.Name.ToLower().Contains(searchTerm.ToLower())
-                                                     || r.Climate.ToLower().Contains(searchTerm)).ToListAsync();
-        return Ok(await filteredResorts);
+        var filteredResorts = _resortRepository.GetResortsBySearch(searchTerm).Result;
+        return Ok(filteredResorts);
     }
     
     [HttpPost]
+    [ProducesResponseType(200, Type = typeof(Resort))]
     public async Task<IActionResult> CreateResort(ResortDto newResort)
     {
+        //TODO: replace with location repository
         var existingLocation = await _db.Locations.FindAsync(newResort.LocationId);
 
-        if (existingLocation == null)
-        {
-            return NotFound();
-        }
-        var resort = new Resort()
-        {
-            Name = newResort.Name,
-            Climate = newResort.Climate,
-            Image = newResort.Image,
-            LocationId = newResort.LocationId
-        };
-        await _db.Resorts.AddAsync(resort);
-        await _db.SaveChangesAsync();
+        //TODO: delete after integrated with frontend
+        if (existingLocation == null) return NotFound();
+        
+        var resort = await _resortRepository.CreateResort(newResort);
         return Ok(resort);
     }
 
     [HttpDelete]
+    [ProducesResponseType(200, Type = typeof(Resort))]
     [Route("{id:int}")]
     public async Task<IActionResult> DeleteResort([FromRoute] int id)
     {
-        var existingResort = await _db.Resorts.FindAsync(id);
-        if (existingResort == null) return NotFound();
-
-        _db.Resorts.Remove(existingResort);
-        await _db.SaveChangesAsync();
+        var deletedResort = await _resortRepository.DeleteResort(id);
         
-        return Ok();
+        //TODO: delete after integrated with frontend
+        if (deletedResort == null) return NotFound();
+
+        return Ok(deletedResort);
     }
 }
