@@ -60,7 +60,7 @@ public class ResortsController : Controller
         if (existingLocation == null) return NotFound();
         if (!ModelState.IsValid) return BadRequest();
         
-        var resort = await _resortRepository.CreateResort(newResort);
+        var resort = await _resortRepository.CreateResort(_mapper.Map<Resort>(newResort));
         return Ok(resort);
     }
 
