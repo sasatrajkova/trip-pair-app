@@ -52,21 +52,23 @@ public class LocationsController : Controller
     [HttpPut]
     [ProducesResponseType(200, Type = typeof(Location))]
     [ProducesResponseType(404)]
+    [ProducesResponseType(400)]
     [Route("{id:int}")]
     public async Task<IActionResult> UpdateLocation([FromRoute] int id, LocationCreateDto locationToUpdate)
     {
         if (!_locationRepository.LocationExists(id)) return NotFound();
-        var updatedLocation = _locationRepository.UpdateLocation(id, locationToUpdate);
-        return Ok(await updatedLocation);
+        if (!ModelState.IsValid) return BadRequest();
+        var updateLocation = _locationRepository.UpdateLocation(id, _mapper.Map<Location>(locationToUpdate));
+        return Ok(await updateLocation);
     }
     
     [HttpPost]
     [ProducesResponseType(200, Type = typeof(Location))]
     [ProducesResponseType(400)]
-    public async Task<IActionResult> CreateLocation(LocationCreateDto locationTo)
+    public async Task<IActionResult> CreateLocation(LocationCreateDto locationToCreate)
     {
         if (!ModelState.IsValid) return BadRequest();
-        var newLocation = await _locationRepository.CreateLocation(locationTo);
+        var newLocation = await _locationRepository.CreateLocation(_mapper.Map<Location>(locationToCreate));
         return Ok(newLocation);
     }
 

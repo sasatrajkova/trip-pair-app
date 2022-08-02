@@ -12,9 +12,10 @@ public class MappingProfiles : Profile
         CreateMap<Resort, ResortDto>();
         CreateMap<LocationDto, Location>();
         CreateMap<Location, LocationDto>();
-        CreateMap<Month, MonthDto>();
+        CreateMap<LocationCreateDto, Location>();
         CreateMap<LocationMonth, LocationMonthDto>();
         CreateMap<LocationMonthDto, LocationMonth>();
-
+        CreateMap<LocationMonthCreateDto, LocationMonth>();
+        CreateMap<Month, MonthDto>();
     }
 }

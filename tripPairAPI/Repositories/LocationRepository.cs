@@ -9,12 +9,10 @@ namespace tripPairAPI.Repositories;
 public class LocationRepository : ILocationRepository
 {
     private readonly TripPairDbContext _db;
-    private readonly IMapper _mapper;
 
-    public LocationRepository(TripPairDbContext db, IMapper mapper)
+    public LocationRepository(TripPairDbContext db)
     {
         _db = db;
-        _mapper = mapper;
     }
     public async Task<IEnumerable<Location>> GetAllLocations()
     {
@@ -32,26 +30,24 @@ public class LocationRepository : ILocationRepository
         return await _db.LocationMonths.Where(lm => lm.LocationId == locationId).Select(lm => lm.Month).ToListAsync();
     }
     
-    public async Task<Location> UpdateLocation(int id, LocationCreateDto locationToUpdate)
+    public async Task<Location> UpdateLocation(int id, Location locationToUpdate)
     {
         //TODO: Missing mapping
-        var updatedLocation = await _db.Locations.FindAsync(id);
-        if (updatedLocation == null) return null;
-        
-        updatedLocation.Name = locationToUpdate.Name;
-        updatedLocation.GoodMonthsDescription = locationToUpdate.GoodMonthsDescription;
-        
+        var existingLocation = await _db.Locations.FindAsync(id);
+        if (existingLocation == null) return null;
+
+        var updatedLocation = locationToUpdate;
+        existingLocation = updatedLocation;
+        _db.Locations.Update(existingLocation);
         await _db.SaveChangesAsync();
-        return updatedLocation;
+        return existingLocation;
     }
 
-    public async Task<Location> CreateLocation(LocationCreateDto locationToCreate)
+    public async Task<Location> CreateLocation(Location locationToCreate)
     {
-        //TODO: Missing mapping and addition to table LocationMonths
-        var newLocation = _mapper.Map<Location>(locationToCreate);
-        await _db.Locations.AddAsync(newLocation);
+        await _db.Locations.AddAsync(locationToCreate);
         await _db.SaveChangesAsync();
-        return newLocation;
+        return locationToCreate;
     }
     
     public async Task<Location> DeleteLocation(int id)
@@ -59,7 +55,12 @@ public class LocationRepository : ILocationRepository
         var locationToRemove = await _db.Locations.FindAsync(id);
         if (locationToRemove == null) return null;
         
+        var locationMonthsToRemove = await _db.LocationMonths.Where(lm => lm.LocationId == locationToRemove.Id).ToListAsync();
         _db.Locations.Remove(locationToRemove);
+        foreach (var locationMonth in locationMonthsToRemove)
+        {
+            _db.LocationMonths.Remove(locationMonth);
+        }
         await _db.SaveChangesAsync();
         return locationToRemove;
     }
