@@ -34,12 +34,12 @@ public class LocationsController : Controller
     public async Task<IActionResult> GetLocation([FromRoute] int id)
     {
         if (!_locationRepository.LocationExists(id)) return NotFound();
-        var location = _mapper.Map <LocationDto>(await _locationRepository.GetLocationById(id));
+        var location = _mapper.Map<LocationDto>(await _locationRepository.GetLocationById(id));
         return Ok(location);
     }
     
     [HttpGet]
-    [ProducesResponseType(200, Type = typeof(IEnumerable<Month>))]
+    [ProducesResponseType(200, Type = typeof(IEnumerable<MonthDto>))]
     [ProducesResponseType(404)]
     [Route("{locationId:int}/Months")]
     public async Task<IActionResult> GetLocationMonths([FromRoute] int locationId)
@@ -50,7 +50,7 @@ public class LocationsController : Controller
     }
 
     [HttpPut]
-    [ProducesResponseType(200, Type = typeof(Location))]
+    [ProducesResponseType(200, Type = typeof(LocationDto))]
     [ProducesResponseType(404)]
     [ProducesResponseType(400)]
     [Route("{id:int}")]
@@ -58,28 +58,29 @@ public class LocationsController : Controller
     {
         if (!_locationRepository.LocationExists(id)) return NotFound();
         if (!ModelState.IsValid) return BadRequest();
-        var updatedLocation = await _locationRepository.UpdateLocation(id, _mapper.Map<Location>(locationToUpdate));
+        var updatedLocation = _mapper.Map<LocationDto>(await _locationRepository.UpdateLocation(id, _mapper.Map<Location>(locationToUpdate)));
         return Ok(updatedLocation);
     }
     
     [HttpPost]
-    [ProducesResponseType(200, Type = typeof(Location))]
+    [ProducesResponseType(200, Type = typeof(LocationDto))]
     [ProducesResponseType(400)]
     public async Task<IActionResult> CreateLocation(LocationCreateDto locationToCreate)
     {
         if (!ModelState.IsValid) return BadRequest();
-        var newLocation = await _locationRepository.CreateLocation(_mapper.Map<Location>(locationToCreate));
+        var newLocation = _mapper.Map<LocationDto>(await _locationRepository.CreateLocation(_mapper.Map<Location>(locationToCreate)));
         return Ok(newLocation);
     }
 
     [HttpDelete]
-    [ProducesResponseType(200, Type = typeof(Location))]
+    [ProducesResponseType(200, Type = typeof(LocationDto))]
     [ProducesResponseType(404)]
     [Route("{id:int}")]
     public async Task<IActionResult> DeleteLocation([FromRoute] int id)
     {
         if (!_locationRepository.LocationExists(id)) return NotFound();
-        return Ok(await _locationRepository.DeleteLocation(id));
+        var deletedLocation = _mapper.Map<LocationDto>(await _locationRepository.DeleteLocation(id));
+        return Ok(deletedLocation);
     }
     
 }
