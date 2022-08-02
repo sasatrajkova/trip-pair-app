@@ -2,7 +2,7 @@ using AutoMapper;
 using tripPairAPI.Data;
 using tripPairAPI.Models;
 
-namespace tripPairAPI.Helper;
+namespace tripPairAPI.Helpers;
 
 public class MappingProfiles : Profile
 {
@@ -10,11 +10,13 @@ public class MappingProfiles : Profile
     {
         CreateMap<ResortDto, Resort>();
         CreateMap<Resort, ResortDto>();
+        CreateMap<ResortCreateDto, Resort>();
         CreateMap<LocationDto, Location>();
         CreateMap<Location, LocationDto>();
-        CreateMap<Month, MonthDto>();
+        CreateMap<LocationCreateDto, Location>();
         CreateMap<LocationMonth, LocationMonthDto>();
         CreateMap<LocationMonthDto, LocationMonth>();
-
+        CreateMap<LocationMonthCreateDto, LocationMonth>();
+        CreateMap<Month, MonthDto>();
     }
 }

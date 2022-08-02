@@ -36,12 +36,11 @@ public class ResortRepository : IResortRepository
         return resort;
     }
 
-    public async Task<Resort> CreateResort(ResortDto newResort)
+    public async Task<Resort> CreateResort(Resort newResort)
     {
-        var resort = _mapper.Map<Resort>(newResort);
-        await _db.Resorts.AddAsync(resort);
+        await _db.Resorts.AddAsync(newResort);
         await _db.SaveChangesAsync();
-        return resort;
+        return newResort;
     }
 
     public async Task<Resort> DeleteResort(int id)

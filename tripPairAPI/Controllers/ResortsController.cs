@@ -29,7 +29,7 @@ public class ResortsController : Controller
     }
 
     [HttpGet]
-    [ProducesResponseType(200, Type = typeof(IEnumerable<Resort>))]
+    [ProducesResponseType(200, Type = typeof(IEnumerable<ResortDto>))]
     [Route("{searchTerm}")]
     public IActionResult GetResortsBySearch(string searchTerm)
     {
@@ -38,7 +38,7 @@ public class ResortsController : Controller
     }
 
     [HttpGet]
-    [ProducesResponseType(200, Type = typeof(IEnumerable<Resort>))]
+    [ProducesResponseType(200, Type = typeof(IEnumerable<ResortDto>))]
     [ProducesResponseType(404)]
     [Route("{id:int}")]
     public async Task<IActionResult> GetResort(int id)
@@ -50,29 +50,29 @@ public class ResortsController : Controller
     }
     
     [HttpPost]
-    [ProducesResponseType(200, Type = typeof(Resort))]
+    [ProducesResponseType(200, Type = typeof(ResortDto))]
     [ProducesResponseType(400)]
     [ProducesResponseType(404)]
-    public async Task<IActionResult> CreateResort(ResortDto newResort)
+    public async Task<IActionResult> CreateResort(ResortCreateDto newResort)
     {
         var existingLocation = await _locationRepository.GetLocationById(newResort.LocationId);
 
         if (existingLocation == null) return NotFound();
         if (!ModelState.IsValid) return BadRequest();
         
-        var resort = await _resortRepository.CreateResort(newResort);
+        var resort = _mapper.Map<ResortDto>(await _resortRepository.CreateResort(_mapper.Map<Resort>(newResort)));
         return Ok(resort);
     }
 
     [HttpDelete]
-    [ProducesResponseType(200, Type = typeof(Resort))]
+    [ProducesResponseType(200, Type = typeof(ResortDto))]
     [ProducesResponseType(404)]
     [Route("{id:int}")]
     public async Task<IActionResult> DeleteResort([FromRoute] int id)
     {
         if (!_resortRepository.ResortExists(id)) return NotFound();
         
-        var deletedResort = await _resortRepository.DeleteResort(id);
+        var deletedResort = _mapper.Map<ResortDto>(await _resortRepository.DeleteResort(id));
         return Ok(deletedResort);
     }
 }
