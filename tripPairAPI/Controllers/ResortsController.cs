@@ -53,7 +53,7 @@ public class ResortsController : Controller
     [ProducesResponseType(200, Type = typeof(Resort))]
     [ProducesResponseType(400)]
     [ProducesResponseType(404)]
-    public async Task<IActionResult> CreateResort(ResortDto newResort)
+    public async Task<IActionResult> CreateResort(ResortCreateDto newResort)
     {
         var existingLocation = await _locationRepository.GetLocationById(newResort.LocationId);
 
