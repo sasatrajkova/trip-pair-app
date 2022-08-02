@@ -11,4 +11,5 @@ public class TripPairDbContext : DbContext
     public DbSet<Location> Locations { get; set; }
     public DbSet<Month> Months { get; set; }
     public DbSet<LocationMonth> LocationMonths { get; set; }
+    
 }

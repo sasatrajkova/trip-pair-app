@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using tripPairAPI.Data;
 using tripPairAPI.Interfaces;
 using tripPairAPI.Models;
@@ -10,15 +9,13 @@ namespace tripPairAPI.Controllers;
 [Route("api/[controller]")]
 public class ResortsController : Controller
 {
-    private readonly TripPairDbContext _db;
     private readonly IResortRepository _resortRepository;
-    private readonly IMapper _mapper;
+    private readonly ILocationRepository _locationRepository;
 
-    public ResortsController(TripPairDbContext db, IResortRepository resortRepository, IMapper mapper)
+    public ResortsController(IResortRepository resortRepository, ILocationRepository locationRepository)
     {
-        _db = db;
         _resortRepository = resortRepository;
-        _mapper = mapper;
+        _locationRepository = locationRepository;
     }
     [HttpGet]
     [ProducesResponseType(200, Type = typeof(IEnumerable<Resort>))]
@@ -55,7 +52,7 @@ public class ResortsController : Controller
     [ProducesResponseType(404)]
     public async Task<IActionResult> CreateResort(ResortDto newResort)
     {
-        var existingLocation = await _db.Locations.FindAsync(newResort.LocationId);
+        var existingLocation = await _locationRepository.GetLocationById(newResort.LocationId);
 
         if (existingLocation == null) return NotFound();
         if (!ModelState.IsValid) return BadRequest();

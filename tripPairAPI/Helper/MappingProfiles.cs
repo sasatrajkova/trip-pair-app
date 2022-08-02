@@ -9,5 +9,11 @@ public class MappingProfiles : Profile
     public MappingProfiles()
     {
         CreateMap<ResortDto, Resort>();
+        CreateMap<LocationDto, Location>();
+        CreateMap<Location, LocationDto>();
+        CreateMap<Month, MonthDto>();
+        CreateMap<LocationMonth, LocationMonthDto>();
+        CreateMap<LocationMonthDto, LocationMonth>();
+
     }
 }

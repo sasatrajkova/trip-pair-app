@@ -4,5 +4,5 @@ public class Month
 {
     public int Id { get; set; }
     public string Name { get; set; }
-    public IEnumerable<Location> Locations { get; set; }
+    public IEnumerable<LocationMonth> MonthLocations { get; set; }
 }
