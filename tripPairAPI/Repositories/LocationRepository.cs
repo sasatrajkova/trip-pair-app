@@ -35,9 +35,18 @@ public class LocationRepository : ILocationRepository
         //TODO: Missing mapping
         var existingLocation = await _db.Locations.FindAsync(id);
         if (existingLocation == null) return null;
+        
+        //Remove all previous location months
+        var existingLocationMonths = _db.LocationMonths.Where(lm => lm.LocationId == existingLocation.Id);
+        foreach (var existingLocationMonth in existingLocationMonths)
+        {
+            _db.LocationMonths.Remove(existingLocationMonth);
+        }
 
-        var updatedLocation = locationToUpdate;
-        existingLocation = updatedLocation;
+        existingLocation.Name = locationToUpdate.Name;
+        existingLocation.GoodMonthsDescription = locationToUpdate.GoodMonthsDescription;
+        existingLocation.LocationMonths = locationToUpdate.LocationMonths;
+        
         _db.Locations.Update(existingLocation);
         await _db.SaveChangesAsync();
         return existingLocation;
@@ -55,12 +64,14 @@ public class LocationRepository : ILocationRepository
         var locationToRemove = await _db.Locations.FindAsync(id);
         if (locationToRemove == null) return null;
         
+        //Cleanup and remove location reference in n-m relationship table
         var locationMonthsToRemove = await _db.LocationMonths.Where(lm => lm.LocationId == locationToRemove.Id).ToListAsync();
         _db.Locations.Remove(locationToRemove);
         foreach (var locationMonth in locationMonthsToRemove)
         {
             _db.LocationMonths.Remove(locationMonth);
         }
+        
         await _db.SaveChangesAsync();
         return locationToRemove;
     }

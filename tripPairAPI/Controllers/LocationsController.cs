@@ -58,8 +58,8 @@ public class LocationsController : Controller
     {
         if (!_locationRepository.LocationExists(id)) return NotFound();
         if (!ModelState.IsValid) return BadRequest();
-        var updateLocation = _locationRepository.UpdateLocation(id, _mapper.Map<Location>(locationToUpdate));
-        return Ok(await updateLocation);
+        var updatedLocation = await _locationRepository.UpdateLocation(id, _mapper.Map<Location>(locationToUpdate));
+        return Ok(updatedLocation);
     }
     
     [HttpPost]
