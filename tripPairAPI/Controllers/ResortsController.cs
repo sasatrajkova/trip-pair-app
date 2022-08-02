@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using tripPairAPI.Data;
 using tripPairAPI.Interfaces;
 using tripPairAPI.Models;
@@ -11,17 +12,19 @@ public class ResortsController : Controller
 {
     private readonly IResortRepository _resortRepository;
     private readonly ILocationRepository _locationRepository;
+    private readonly IMapper _mapper;
 
-    public ResortsController(IResortRepository resortRepository, ILocationRepository locationRepository)
+    public ResortsController(IResortRepository resortRepository, ILocationRepository locationRepository, IMapper mapper)
     {
         _resortRepository = resortRepository;
         _locationRepository = locationRepository;
+        _mapper = mapper;
     }
     [HttpGet]
-    [ProducesResponseType(200, Type = typeof(IEnumerable<Resort>))]
+    [ProducesResponseType(200, Type = typeof(IEnumerable<ResortDto>))]
     public IActionResult GetAllResorts()
     {
-        var resorts = _resortRepository.GetAllResorts().Result;
+        var resorts = _mapper.Map<List<ResortDto>>(_resortRepository.GetAllResorts().Result);
         return Ok(resorts);
     }
 
@@ -30,7 +33,7 @@ public class ResortsController : Controller
     [Route("{searchTerm}")]
     public IActionResult GetResortsBySearch(string searchTerm)
     {
-        var filteredResorts = _resortRepository.GetResortsBySearch(searchTerm).Result;
+        var filteredResorts =  _mapper.Map<List<ResortDto>>(_resortRepository.GetResortsBySearch(searchTerm).Result);
         return Ok(filteredResorts);
     }
 
@@ -42,7 +45,7 @@ public class ResortsController : Controller
     {
         if (!_resortRepository.ResortExists(id)) return NotFound();
         
-        var resort = await _resortRepository.GetResort(id);
+        var resort = _mapper.Map<ResortDto>(await _resortRepository.GetResort(id));
         return Ok(resort);
     }
     

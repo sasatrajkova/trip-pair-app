@@ -19,20 +19,20 @@ public class ResortRepository : IResortRepository
 
     public async Task<IEnumerable<Resort>> GetAllResorts()
     {
-        return await _db.Resorts.ToListAsync();
+        return await _db.Resorts.Include(r => r.Location).ThenInclude(l => l.LocationMonths).ThenInclude(lm => lm.Month).ToListAsync();
     }
 
     public async Task<IEnumerable<Resort>> GetResortsBySearch(string searchTerm)
     {
-        var filteredResorts = _db.Resorts.Include(r => r.Location).Where(r => r.Name.ToLower().Contains(searchTerm.ToLower())
+        var filteredResorts = _db.Resorts.Include(r => r.Location).ThenInclude(l => l.LocationMonths).ThenInclude(lm => lm.Month).Where(r => r.Name.ToLower().Contains(searchTerm.ToLower())
                                                                               || r.Location.Name.ToLower().Contains(searchTerm.ToLower())
                                                                               || r.Climate.ToLower().Contains(searchTerm)).ToListAsync();
         return await filteredResorts;
     }
 
-    public async Task<Resort> GetResort(int id)
+    public async Task<Resort> GetResort(int resortId)
     {
-        var resort = await _db.Resorts.FindAsync(id);
+        var resort = await _db.Resorts.Include(r => r.Location).ThenInclude(l => l.LocationMonths).ThenInclude(lm => lm.Month).Where(r => r.Id == resortId).FirstOrDefaultAsync();
         return resort;
     }
 
