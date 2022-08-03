@@ -16,7 +16,8 @@ public class LocationRepository : ILocationRepository
     }
     public async Task<IEnumerable<Location>> GetAllLocations()
     {
-        return await _db.Locations.Include(l => l.LocationMonths).ThenInclude(lm => lm.Month).ToListAsync();
+        var locations = await _db.Locations.Include(l => l.LocationMonths).ThenInclude(lm => lm.Month).ToListAsync();
+        return locations;
     }
 
     public async Task<Location> GetLocationById(int id)
@@ -27,7 +28,8 @@ public class LocationRepository : ILocationRepository
 
     public async Task<IEnumerable<Month>> GetLocationMonths(int locationId)
     {
-        return await _db.LocationMonths.Where(lm => lm.LocationId == locationId).Select(lm => lm.Month).ToListAsync();
+        var locationMonths = await _db.LocationMonths.Where(lm => lm.LocationId == locationId).Select(lm => lm.Month).ToListAsync();
+        return locationMonths;
     }
     
     public async Task<Location> UpdateLocation(int id, Location locationToUpdate)
@@ -36,7 +38,7 @@ public class LocationRepository : ILocationRepository
         var existingLocation = await _db.Locations.FindAsync(id);
         if (existingLocation == null) return null;
         
-        //Remove all previous location months
+        //Remove all previously assigned location months
         var existingLocationMonths = _db.LocationMonths.Where(lm => lm.LocationId == existingLocation.Id);
         foreach (var existingLocationMonth in existingLocationMonths)
         {
@@ -66,12 +68,12 @@ public class LocationRepository : ILocationRepository
         
         //Cleanup and remove location reference in n-m relationship table
         var locationMonthsToRemove = await _db.LocationMonths.Where(lm => lm.LocationId == locationToRemove.Id).ToListAsync();
-        _db.Locations.Remove(locationToRemove);
         foreach (var locationMonth in locationMonthsToRemove)
         {
             _db.LocationMonths.Remove(locationMonth);
         }
         
+        _db.Locations.Remove(locationToRemove);
         await _db.SaveChangesAsync();
         return locationToRemove;
     }

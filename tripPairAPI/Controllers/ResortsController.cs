@@ -52,16 +52,29 @@ public class ResortsController : Controller
     [HttpPost]
     [ProducesResponseType(200, Type = typeof(ResortDto))]
     [ProducesResponseType(400)]
-    [ProducesResponseType(404)]
+    [ProducesResponseType(422)]
     public async Task<IActionResult> CreateResort(ResortCreateDto newResort)
     {
+        //Can be removed once frontend validation is implemented
         var existingLocation = await _locationRepository.GetLocationById(newResort.LocationId);
-
-        if (existingLocation == null) return NotFound();
+        if (existingLocation == null)
+        {
+            ModelState.AddModelError("", "Location does not exist");
+            return StatusCode(422, ModelState);
+        }
+        
         if (!ModelState.IsValid) return BadRequest();
         
-        var resort = _mapper.Map<ResortDto>(await _resortRepository.CreateResort(_mapper.Map<Resort>(newResort)));
-        return Ok(resort);
+        var existingResort = _resortRepository.GetAllResorts().Result
+            .FirstOrDefault(r => r.Name.ToLower().Trim() == newResort.Name.ToLower().Trim() && r.LocationId == newResort.LocationId);
+        if (existingResort != null)
+        {
+            ModelState.AddModelError("", "Resort already exists");
+            return StatusCode(422, ModelState);
+        }
+
+        var createdResort = _mapper.Map<ResortDto>(await _resortRepository.CreateResort(_mapper.Map<Resort>(newResort)));
+        return Ok(createdResort);
     }
 
     [HttpDelete]
