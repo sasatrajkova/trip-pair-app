@@ -54,28 +54,28 @@ public class LocationRepository : ILocationRepository
         return existingLocation;
     }
 
-    public async Task<Location> CreateLocation(Location locationToCreate)
+    public async Task<Location> CreateLocation(Location newLocation)
     {
-        await _db.Locations.AddAsync(locationToCreate);
+        await _db.Locations.AddAsync(newLocation);
         await _db.SaveChangesAsync();
-        return locationToCreate;
+        return newLocation;
     }
     
     public async Task<Location> DeleteLocation(int id)
     {
-        var locationToRemove = await _db.Locations.FindAsync(id);
-        if (locationToRemove == null) return null;
+        var locationToDelete = await _db.Locations.FindAsync(id);
+        if (locationToDelete == null) return null;
         
         //Cleanup and remove location reference in n-m relationship table
-        var locationMonthsToRemove = await _db.LocationMonths.Where(lm => lm.LocationId == locationToRemove.Id).ToListAsync();
-        foreach (var locationMonth in locationMonthsToRemove)
+        var locationMonthsToDelete = await _db.LocationMonths.Where(lm => lm.LocationId == locationToDelete.Id).ToListAsync();
+        foreach (var locationMonth in locationMonthsToDelete)
         {
             _db.LocationMonths.Remove(locationMonth);
         }
         
-        _db.Locations.Remove(locationToRemove);
+        _db.Locations.Remove(locationToDelete);
         await _db.SaveChangesAsync();
-        return locationToRemove;
+        return locationToDelete;
     }
 
     public bool LocationExists(int id)
