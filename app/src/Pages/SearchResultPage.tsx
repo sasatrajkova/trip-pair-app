@@ -5,14 +5,14 @@ import ResortInventory from "../Components/ResortInventory";
 import SearchBar from "../Components/SearchBar";
 
 const SearchResultPage: React.FC = () => {
-    const { searchValue } = useParams()
+  const { searchValue } = useParams();
 
-    return (
-      <Layout>
-        <SearchBar searchValue={searchValue}/>
-        <ResortInventory />
-      </Layout>
-    );
-  };
+  return (
+    <Layout>
+      <SearchBar searchValue={searchValue} />
+      <ResortInventory />
+    </Layout>
+  );
+};
 
 export default SearchResultPage;

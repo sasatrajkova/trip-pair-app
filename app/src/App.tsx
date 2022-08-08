@@ -6,12 +6,12 @@ import SearchResultPage from "./Pages/SearchResultPage";
 
 const App: React.FC = () => {
   return (
-      <Router>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/:searchValue" element={<SearchResultPage />} />
-        </Routes>
-      </Router>
+    <Router>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/:searchValue" element={<SearchResultPage />} />
+      </Routes>
+    </Router>
   );
 };
 

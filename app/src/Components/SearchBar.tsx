@@ -2,22 +2,25 @@ import React, { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
 interface Props {
-    searchValue?: string
+  searchValue?: string;
 }
 const SearchBar: React.FC<Props> = (props) => {
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = React.useState("");
 
-  const changeSearchValue = useCallback((event: { target: { value: string; }; }) => {
-    setSearchValue(event.target.value ?? "");
-  }, [])
+  const changeSearchValue = useCallback(
+    (event: { target: { value: string } }) => {
+      setSearchValue(event.target.value ?? "");
+    },
+    []
+  );
 
   const handleKeyDown = (event: { key: string }) => {
     if (event.key === "Enter" && searchValue !== props.searchValue) {
       searchTripPair();
     }
     if (event.key === "Escape") {
-        setSearchValue("");
+      setSearchValue("");
     }
   };
   const searchTripPair = () => {
