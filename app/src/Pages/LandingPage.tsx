@@ -1,12 +1,13 @@
 import React from "react";
+import Layout from "../Components/Layout";
 import SearchBar from "../Components/SearchBar";
 
 const LandingPage: React.FC = () => {
   return (
-    <div>
+    <Layout>
       <SearchBar />
-      <div className="flex justify-center">Your next advanture awaits.</div>
-    </div>
+      <div className="flex justify-center pt-1">Your next trip awaits.</div>
+    </Layout>
   );
 };
 

@@ -2,9 +2,9 @@ import React from "react";
 
 const SearchBar: React.FC = () => {
   return (
-      <form className="flex justify-center px-32 mx-auto text-gray-600">
+      <form className="flex px-8 mx-auto text-gray-600">
         <input
-          className="border-2 border-gray-300 h-10 w-full px-5 pr-16 rounded-lg text-sm focus:outline-none"
+          className="border-2 border-gray-300 h-10 w-full px-5 rounded-lg text-sm focus:outline-none"
           type="search"
           placeholder="Search"
         ></input>
