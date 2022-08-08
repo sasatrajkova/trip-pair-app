@@ -5,7 +5,7 @@ const LandingPage: React.FC = () => {
   return (
     <div>
       <SearchBar />
-      Your next advanture awaits.
+      <div className="flex justify-center">Your next advanture awaits.</div>
     </div>
   );
 };
