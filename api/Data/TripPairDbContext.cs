@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using tripPairAPI.Models;
+using TripPair.Api.Models;
 
-namespace tripPairAPI.Data;
+namespace TripPair.Api.Data;
 
 public class TripPairDbContext : DbContext
 {

@@ -1,6 +1,4 @@
-﻿using tripPairAPI.Models;
-
-namespace tripPairAPI.Data;
+﻿namespace TripPair.Api.Data;
 
 public class ResortDto
 {

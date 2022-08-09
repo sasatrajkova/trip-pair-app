@@ -1,10 +1,10 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using tripPairAPI.Data;
-using tripPairAPI.Interfaces;
-using tripPairAPI.Models;
+using TripPair.Api.Data;
+using TripPair.Api.Interfaces;
+using TripPair.Api.Models;
 
-namespace tripPairAPI.Repositories;
+namespace TripPair.Api.Repositories;
 
 public class ResortRepository : IResortRepository
 {

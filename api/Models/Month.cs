@@ -1,4 +1,4 @@
-namespace tripPairAPI.Models;
+namespace TripPair.Api.Models;
 
 public class Month
 {

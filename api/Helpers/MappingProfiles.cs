@@ -1,8 +1,8 @@
 using AutoMapper;
-using tripPairAPI.Data;
-using tripPairAPI.Models;
+using TripPair.Api.Data;
+using TripPair.Api.Models;
 
-namespace tripPairAPI.Helpers;
+namespace TripPair.Api.Helpers;
 
 public class MappingProfiles : Profile
 {

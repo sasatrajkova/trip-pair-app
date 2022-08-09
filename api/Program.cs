@@ -1,9 +1,9 @@
 using System.Collections.Immutable;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
-using tripPairAPI.Data;
-using tripPairAPI.Interfaces;
-using tripPairAPI.Repositories;
+using TripPair.Api.Data;
+using TripPair.Api.Interfaces;
+using TripPair.Api.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 

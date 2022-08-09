@@ -1,6 +1,4 @@
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace tripPairAPI.Models;
+namespace TripPair.Api.Models;
 
 public class LocationMonth
 {

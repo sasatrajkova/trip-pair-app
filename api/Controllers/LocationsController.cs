@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using tripPairAPI.Data;
-using tripPairAPI.Interfaces;
-using tripPairAPI.Models;
+using TripPair.Api.Data;
+using TripPair.Api.Interfaces;
+using TripPair.Api.Models;
 
-namespace tripPairAPI.Controllers;
+namespace TripPair.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

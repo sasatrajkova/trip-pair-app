@@ -1,4 +1,4 @@
-namespace tripPairAPI.Data;
+namespace TripPair.Api.Data;
 
 public class LocationMonthDto
 {

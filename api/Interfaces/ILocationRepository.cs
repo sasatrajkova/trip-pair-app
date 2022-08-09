@@ -1,7 +1,6 @@
-using tripPairAPI.Data;
-using tripPairAPI.Models;
+using TripPair.Api.Models;
 
-namespace tripPairAPI.Interfaces;
+namespace TripPair.Api.Interfaces;
 
 public interface ILocationRepository
 {
