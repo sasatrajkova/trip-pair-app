@@ -19,25 +19,30 @@ public class LocationRepository : ILocationRepository
         return locations;
     }
 
-    public async Task<Location> GetLocationById(int id)
+    public async Task<Location?> GetLocationById(int id)
     {
         var location = await _db.Locations.Include(l => l.LocationMonths).ThenInclude(lm => lm.Month).Where(l => l.Id == id).FirstOrDefaultAsync();
         return location;
     }
 
-    public async Task<IEnumerable<Month>> GetLocationMonths(int locationId)
+    public async Task<Location?> GetLocationByName(string locationName)
+    {
+        var location = await _db.Locations.Where(l => l.Name.ToLower().Trim() == locationName.ToLower().Trim()).FirstOrDefaultAsync();
+        return location;
+    }
+
+    public async Task<IEnumerable<Month?>> GetLocationMonths(int locationId)
     {
         var locationMonths = await _db.LocationMonths.Where(lm => lm.LocationId == locationId).Select(lm => lm.Month).ToListAsync();
         return locationMonths;
     }
     
-    public async Task<Location> UpdateLocation(int id, Location locationToUpdate)
+    public async Task<Location?> UpdateLocation(int id, Location locationToUpdate)
     {
-        //TODO: Missing mapping
         var existingLocation = await _db.Locations.FindAsync(id);
         if (existingLocation == null) return null;
         
-        //Remove all previously assigned location months
+        //Removes all previously assigned location months
         var existingLocationMonths = _db.LocationMonths.Where(lm => lm.LocationId == existingLocation.Id);
         foreach (var existingLocationMonth in existingLocationMonths)
         {
@@ -60,12 +65,12 @@ public class LocationRepository : ILocationRepository
         return newLocation;
     }
     
-    public async Task<Location> DeleteLocation(int id)
+    public async Task<Location?> DeleteLocation(int id)
     {
         var locationToDelete = await _db.Locations.FindAsync(id);
         if (locationToDelete == null) return null;
         
-        //Cleanup and remove location reference in n-m relationship table
+        //Cleans up and removes location reference in n-m relationship table
         var locationMonthsToDelete = await _db.LocationMonths.Where(lm => lm.LocationId == locationToDelete.Id).ToListAsync();
         foreach (var locationMonth in locationMonthsToDelete)
         {
@@ -75,10 +80,5 @@ public class LocationRepository : ILocationRepository
         _db.Locations.Remove(locationToDelete);
         await _db.SaveChangesAsync();
         return locationToDelete;
-    }
-
-    public bool LocationExists(int id)
-    {
-        return _db.Locations.Any(l => l.Id == id);
     }
 }
