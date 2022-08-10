@@ -37,7 +37,7 @@ public class ResortRepository : IResortRepository
 
     public async Task<Resort?> GetResortByName(string resortName, int resortLocationId)
     {
-        var resort = await _db.Resorts.FirstOrDefaultAsync(r => r.Name.ToLower().Trim() == resortName.ToLower().Trim() && r.LocationId == resortLocationId);
+        var resort = await _db.Resorts.Where(r => r.Name.ToLower().Trim() == resortName.ToLower().Trim() && r.LocationId == resortLocationId).FirstOrDefaultAsync();
         return resort;
     }
 

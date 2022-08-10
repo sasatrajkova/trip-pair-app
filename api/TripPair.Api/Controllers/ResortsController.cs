@@ -43,10 +43,8 @@ public class ResortsController : Controller
     [Route("{id:int}")]
     public async Task<IActionResult> GetResort(int id)
     {
-        if (!_resortRepository.ResortExists(id)) return NotFound();
-        
-        var resort = _mapper.Map<ResortDto>(await _resortRepository.GetResort(id));
-        return Ok(resort);
+        var resort = _mapper.Map<ResortDto>(await _resortRepository.GetResortById(id));
+        return resort != null ? Ok(resort) : NotFound();
     }
     
     [HttpPost]
@@ -64,9 +62,9 @@ public class ResortsController : Controller
         }
         
         if (!ModelState.IsValid) return BadRequest();
-        
-        var existingResort = _resortRepository.GetAllResorts().Result
-            .FirstOrDefault(r => r.Name.ToLower().Trim() == resortToCreate.Name.ToLower().Trim() && r.LocationId == resortToCreate.LocationId);
+
+        //Server side filtering
+        var existingResort = await _resortRepository.GetResortByName(resortToCreate.Name, resortToCreate.LocationId);
         if (existingResort != null)
         {
             ModelState.AddModelError("", "Resort already exists");
@@ -83,9 +81,7 @@ public class ResortsController : Controller
     [Route("{id:int}")]
     public async Task<IActionResult> DeleteResort([FromRoute] int id)
     {
-        if (!_resortRepository.ResortExists(id)) return NotFound();
-        
         var deletedResort = _mapper.Map<ResortDto>(await _resortRepository.DeleteResort(id));
-        return Ok(deletedResort);
+        return deletedResort != null ? Ok(deletedResort) : NotFound();
     }
 }
