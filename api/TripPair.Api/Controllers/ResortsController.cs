@@ -22,18 +22,18 @@ public class ResortsController : Controller
     }
     [HttpGet]
     [ProducesResponseType(200, Type = typeof(IEnumerable<ResortDto>))]
-    public IActionResult GetAllResorts()
+    public async Task<IActionResult> GetAllResorts()
     {
-        var resorts = _mapper.Map<List<ResortDto>>(_resortRepository.GetAllResorts().Result);
+        var resorts = _mapper.Map<List<ResortDto>>(await _resortRepository.GetAllResorts());
         return Ok(resorts);
     }
 
     [HttpGet]
     [ProducesResponseType(200, Type = typeof(IEnumerable<ResortDto>))]
     [Route("{searchTerm}")]
-    public IActionResult GetResortsBySearch(string searchTerm)
+    public async Task<OkObjectResult> GetResortsBySearch(string searchTerm)
     {
-        var filteredResorts =  _mapper.Map<List<ResortDto>>(_resortRepository.GetResortsBySearch(searchTerm).Result);
+        var filteredResorts =  _mapper.Map<List<ResortDto>>(await _resortRepository.GetResortsBySearch(searchTerm));
         return Ok(filteredResorts);
     }
 
