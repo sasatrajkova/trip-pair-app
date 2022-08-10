@@ -33,10 +33,8 @@ public class LocationsController : Controller
     [Route("{id:int}")]
     public async Task<IActionResult> GetLocation([FromRoute] int id)
     {
-        if (!_locationRepository.LocationExists(id)) return NotFound();
-        
         var location = _mapper.Map<LocationDto>(await _locationRepository.GetLocationById(id));
-        return Ok(location);
+        return location != null ? Ok(location) : NotFound();
     }
     
     [HttpGet]
@@ -45,10 +43,8 @@ public class LocationsController : Controller
     [Route("{locationId:int}/Months")]
     public async Task<IActionResult> GetLocationMonths([FromRoute] int locationId)
     {
-        if (!_locationRepository.LocationExists(locationId)) return NotFound();
-        
         var locationMonths = _mapper.Map<List<MonthDto>>(await _locationRepository.GetLocationMonths(locationId));
-        return Ok(locationMonths);
+        return locationMonths != null ? Ok(locationMonths) : NotFound();
     }
 
     [HttpPut]
@@ -58,11 +54,10 @@ public class LocationsController : Controller
     [Route("{id:int}")]
     public async Task<IActionResult> UpdateLocation([FromRoute] int id, LocationCreateDto locationToUpdate)
     {
-        if (!_locationRepository.LocationExists(id)) return NotFound();
         if (!ModelState.IsValid) return BadRequest();
         
         var updatedLocation = _mapper.Map<LocationDto>(await _locationRepository.UpdateLocation(id, _mapper.Map<Location>(locationToUpdate)));
-        return Ok(updatedLocation);
+        return updatedLocation != null ? Ok(updatedLocation) : NotFound();
     }
     
     [HttpPost]
@@ -73,8 +68,7 @@ public class LocationsController : Controller
     {
         if (!ModelState.IsValid) return BadRequest();
 
-        var existingLocation = _locationRepository.GetAllLocations().Result
-            .FirstOrDefault(l => l.Name.ToLower().Trim() == locationToCreate.Name.ToLower().Trim());
+        var existingLocation = await _locationRepository.GetLocationByName(locationToCreate.Name);
         if (existingLocation != null)
         {
             ModelState.AddModelError("", "Location already exists");
@@ -91,10 +85,8 @@ public class LocationsController : Controller
     [Route("{id:int}")]
     public async Task<IActionResult> DeleteLocation([FromRoute] int id)
     {
-        if (!_locationRepository.LocationExists(id)) return NotFound();
-        
         var deletedLocation = _mapper.Map<LocationDto>(await _locationRepository.DeleteLocation(id));
-        return Ok(deletedLocation);
+        return deletedLocation != null ? Ok(deletedLocation) : NotFound();
     }
     
 }
