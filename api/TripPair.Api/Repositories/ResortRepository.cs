@@ -9,30 +9,35 @@ namespace TripPair.Api.Repositories;
 public class ResortRepository : IResortRepository
 {
     private readonly TripPairDbContext _db;
-    private readonly IMapper _mapper;
 
-    public ResortRepository(TripPairDbContext db, IMapper mapper)
+    public ResortRepository(TripPairDbContext db)
     {
         _db = db;
-        _mapper = mapper;
     }
 
     public async Task<IEnumerable<Resort>> GetAllResorts()
     {
-        return await _db.Resorts.Include(r => r.Location).ThenInclude(l => l.LocationMonths).ThenInclude(lm => lm.Month).ToListAsync();
+        var resorts = await _db.Resorts.Include(r => r.Location).ThenInclude(l => l.LocationMonths).ThenInclude(lm => lm.Month).ToListAsync();
+        return resorts;
     }
 
     public async Task<IEnumerable<Resort>> GetResortsBySearch(string searchTerm)
     {
-        var filteredResorts = _db.Resorts.Include(r => r.Location).ThenInclude(l => l.LocationMonths).ThenInclude(lm => lm.Month).Where(r => r.Name.ToLower().Contains(searchTerm.ToLower())
+        var filteredResorts = await _db.Resorts.Include(r => r.Location).ThenInclude(l => l.LocationMonths).ThenInclude(lm => lm.Month).Where(r => r.Name.ToLower().Contains(searchTerm.ToLower())
                                                                               || r.Location.Name.ToLower().Contains(searchTerm.ToLower())
                                                                               || r.Climate.ToLower().Contains(searchTerm)).ToListAsync();
-        return await filteredResorts;
+        return filteredResorts;
     }
 
-    public async Task<Resort> GetResort(int resortId)
+    public async Task<Resort?> GetResortById(int resortId)
     {
         var resort = await _db.Resorts.Include(r => r.Location).ThenInclude(l => l.LocationMonths).ThenInclude(lm => lm.Month).Where(r => r.Id == resortId).FirstOrDefaultAsync();
+        return resort;
+    }
+
+    public async Task<Resort?> GetResortByName(string resortName, int resortLocationId)
+    {
+        var resort = await _db.Resorts.FirstOrDefaultAsync(r => r.Name.ToLower().Trim() == resortName.ToLower().Trim() && r.LocationId == resortLocationId);
         return resort;
     }
 
@@ -43,7 +48,7 @@ public class ResortRepository : IResortRepository
         return newResort;
     }
 
-    public async Task<Resort> DeleteResort(int id)
+    public async Task<Resort?> DeleteResort(int id)
     {
         var resortToDelete = await _db.Resorts.FindAsync(id);
         
@@ -52,10 +57,5 @@ public class ResortRepository : IResortRepository
         _db.Resorts.Remove(resortToDelete);
         await _db.SaveChangesAsync();
         return resortToDelete;
-    }
-
-    public bool ResortExists(int id)
-    {
-        return _db.Resorts.Any(r => r.Id == id);
     }
 }
