@@ -63,7 +63,6 @@ public class ResortsController : Controller
         
         if (!ModelState.IsValid) return BadRequest();
 
-        //Server side filtering
         var existingResort = await _resortRepository.GetResortByName(resortToCreate.Name, resortToCreate.LocationId);
         if (existingResort != null)
         {
