@@ -10,14 +10,15 @@ namespace TripPair.Api.Controllers;
 [Route("api/[controller]")]
 public class ResortsController : Controller
 {
-    private readonly IResortRepository _resortRepository;
     private readonly IMapper _mapper;
+    private readonly IResortRepository _resortRepository;
 
     public ResortsController(IResortRepository resortRepository, IMapper mapper)
     {
         _resortRepository = resortRepository;
         _mapper = mapper;
     }
+
     [HttpGet]
     [ProducesResponseType(200, Type = typeof(IEnumerable<ResortDto>))]
     public async Task<OkObjectResult> GetAllResorts()
@@ -27,12 +28,12 @@ public class ResortsController : Controller
     }
 
     [HttpGet]
-    
     [ProducesResponseType(200, Type = typeof(IEnumerable<ResortDto>))]
     [Route("{searchTerm}")]
     public async Task<OkObjectResult> GetResortsBySearch(string searchTerm)
     {
-        var filteredResorts =  _mapper.Map<IEnumerable<ResortDto>>(await _resortRepository.GetResortsBySearch(searchTerm));
+        var filteredResorts =
+            _mapper.Map<IEnumerable<ResortDto>>(await _resortRepository.GetResortsBySearch(searchTerm));
         return Ok(filteredResorts);
     }
 
@@ -45,7 +46,7 @@ public class ResortsController : Controller
         var resort = _mapper.Map<ResortDto>(await _resortRepository.GetResortById(id));
         return resort != null ? Ok(resort) : NotFound();
     }
-    
+
     [HttpPost]
     [ProducesResponseType(200, Type = typeof(ResortDto))]
     [ProducesResponseType(400)]
@@ -59,7 +60,7 @@ public class ResortsController : Controller
         //     ModelState.AddModelError("", "Location does not exist");
         //     return StatusCode(422, ModelState);
         // }
-        
+
         if (!ModelState.IsValid) return BadRequest();
 
         var existingResort = await _resortRepository.GetResortByName(resortToCreate.Name, resortToCreate.LocationId);
@@ -69,7 +70,8 @@ public class ResortsController : Controller
             return StatusCode(422, ModelState);
         }
 
-        var createdResort = _mapper.Map<ResortDto>(await _resortRepository.CreateResort(_mapper.Map<Resort>(resortToCreate)));
+        var createdResort =
+            _mapper.Map<ResortDto>(await _resortRepository.CreateResort(_mapper.Map<Resort>(resortToCreate)));
         return Ok(createdResort);
     }
 

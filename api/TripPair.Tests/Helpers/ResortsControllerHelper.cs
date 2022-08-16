@@ -14,14 +14,14 @@ public static class ResortsControllerHelper
         var resort4 = CreateResort(1, "resort4", "climate2", "location2", "month2");
         var resort5 = CreateResort("resort1", "climate2", "location3", "month3");
         var resort6 = CreateResort("resort1", "climate2", "location4", "month4");
-        
+
         return new List<Resort> {resort1, resort2, resort3, resort4, resort5, resort6};
     }
 
     public static Resort CreateResort(string resortName, string climate, string locationName, string month)
     {
         return new Resort
-        { 
+        {
             Id = new Random().Next(),
             Name = resortName,
             Climate = climate,
@@ -30,11 +30,11 @@ public static class ResortsControllerHelper
             LocationId = new Random().Next()
         };
     }
-    
+
     public static Resort CreateResort(int id, string resortName, string climate, string locationName, string month)
     {
         return new Resort
-        { 
+        {
             Id = id,
             Name = resortName,
             Climate = climate,
@@ -53,7 +53,7 @@ public static class ResortsControllerHelper
             {
                 new()
                 {
-                    Month = new Month()
+                    Month = new Month
                     {
                         Name = month
                     }
@@ -61,6 +61,7 @@ public static class ResortsControllerHelper
             }
         };
     }
+
     public static Location CreateLocation(int id, string locationName, string month)
     {
         return new Location
@@ -71,7 +72,7 @@ public static class ResortsControllerHelper
             {
                 new()
                 {
-                    Month = new Month()
+                    Month = new Month
                     {
                         Name = month
                     }
