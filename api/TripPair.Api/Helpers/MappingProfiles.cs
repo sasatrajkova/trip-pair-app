@@ -8,11 +8,11 @@ public class MappingProfiles : Profile
 {
     public MappingProfiles()
     {
-        CreateMap<ResortDto, Resort>().ReverseMap();
+        CreateMap<Resort, ResortDto>();
         CreateMap<ResortCreateDto, Resort>();
-        CreateMap<LocationDto, Location>().ReverseMap();
+        CreateMap<Location, LocationDto>();
         CreateMap<LocationCreateDto, Location>();
-        CreateMap<LocationMonth, LocationMonthDto>().ReverseMap();
+        CreateMap<LocationMonth, LocationMonthDto>();
         CreateMap<LocationMonthCreateDto, LocationMonth>();
         CreateMap<Month, MonthDto>();
     }
