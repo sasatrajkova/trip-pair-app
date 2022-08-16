@@ -1,4 +1,3 @@
-using System.Collections.Immutable;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using TripPair.Api.Data;
@@ -9,7 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
-builder.Services.AddControllers().ConfigureApiBehaviorOptions(x => { x.SuppressMapClientErrors = true; });;
+builder.Services.AddControllers().ConfigureApiBehaviorOptions(x => { x.SuppressMapClientErrors = true; });
+;
 builder.Services.AddControllers()
     .AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -19,7 +19,8 @@ builder.Services.AddScoped<ILocationRepository, LocationRepository>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<TripPairDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("TripPairApiDb")!));
+builder.Services.AddDbContext<TripPairDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("TripPairApiDb")!));
 
 var app = builder.Build();
 

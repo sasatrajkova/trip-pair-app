@@ -10,19 +10,18 @@ namespace TripPair.Api.Controllers;
 [Route("api/[controller]")]
 public class ResortsController : Controller
 {
-    private readonly IResortRepository _resortRepository;
-    private readonly ILocationRepository _locationRepository;
     private readonly IMapper _mapper;
+    private readonly IResortRepository _resortRepository;
 
-    public ResortsController(IResortRepository resortRepository, ILocationRepository locationRepository, IMapper mapper)
+    public ResortsController(IResortRepository resortRepository, IMapper mapper)
     {
         _resortRepository = resortRepository;
-        _locationRepository = locationRepository;
         _mapper = mapper;
     }
+
     [HttpGet]
     [ProducesResponseType(200, Type = typeof(IEnumerable<ResortDto>))]
-    public async Task<IActionResult> GetAllResorts()
+    public async Task<OkObjectResult> GetAllResorts()
     {
         var resorts = _mapper.Map<List<ResortDto>>(await _resortRepository.GetAllResorts());
         return Ok(resorts);
@@ -33,7 +32,8 @@ public class ResortsController : Controller
     [Route("{searchTerm}")]
     public async Task<OkObjectResult> GetResortsBySearch(string searchTerm)
     {
-        var filteredResorts =  _mapper.Map<List<ResortDto>>(await _resortRepository.GetResortsBySearch(searchTerm));
+        var filteredResorts =
+            _mapper.Map<IEnumerable<ResortDto>>(await _resortRepository.GetResortsBySearch(searchTerm));
         return Ok(filteredResorts);
     }
 
@@ -46,21 +46,21 @@ public class ResortsController : Controller
         var resort = _mapper.Map<ResortDto>(await _resortRepository.GetResortById(id));
         return resort != null ? Ok(resort) : NotFound();
     }
-    
+
     [HttpPost]
     [ProducesResponseType(200, Type = typeof(ResortDto))]
     [ProducesResponseType(400)]
     [ProducesResponseType(422)]
     public async Task<IActionResult> CreateResort(ResortCreateDto resortToCreate)
     {
-        //Can be removed once frontend validation is implemented
-        var existingLocation = await _locationRepository.GetLocationById(resortToCreate.LocationId);
-        if (existingLocation == null)
-        {
-            ModelState.AddModelError("", "Location does not exist");
-            return StatusCode(422, ModelState);
-        }
-        
+        //TODO: remove once frontend validation is implemented
+        // var existingLocation = await _locationRepository.GetLocationById(resortToCreate.LocationId);
+        // if (existingLocation == null)
+        // {
+        //     ModelState.AddModelError("", "Location does not exist");
+        //     return StatusCode(422, ModelState);
+        // }
+
         if (!ModelState.IsValid) return BadRequest();
 
         var existingResort = await _resortRepository.GetResortByName(resortToCreate.Name, resortToCreate.LocationId);
@@ -70,7 +70,8 @@ public class ResortsController : Controller
             return StatusCode(422, ModelState);
         }
 
-        var createdResort = _mapper.Map<ResortDto>(await _resortRepository.CreateResort(_mapper.Map<Resort>(resortToCreate)));
+        var createdResort =
+            _mapper.Map<ResortDto>(await _resortRepository.CreateResort(_mapper.Map<Resort>(resortToCreate)));
         return Ok(createdResort);
     }
 
