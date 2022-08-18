@@ -21,7 +21,7 @@ public class LocationsController : Controller
 
     [HttpGet]
     [ProducesResponseType(200, Type = typeof(IEnumerable<LocationDto>))]
-    public async Task<IActionResult> GetAllLocations()
+    public async Task<OkObjectResult> GetAllLocations()
     {
         var locations = _mapper.Map<List<LocationDto>>(await _locationRepository.GetAllLocations());
         return Ok(locations);
@@ -39,12 +39,11 @@ public class LocationsController : Controller
 
     [HttpGet]
     [ProducesResponseType(200, Type = typeof(IEnumerable<MonthDto>))]
-    [ProducesResponseType(404)]
     [Route("{locationId:int}/Months")]
     public async Task<IActionResult> GetLocationMonths([FromRoute] int locationId)
     {
         var locationMonths = _mapper.Map<List<MonthDto>>(await _locationRepository.GetLocationMonths(locationId));
-        return locationMonths != null ? Ok(locationMonths) : NotFound();
+        return Ok(locationMonths);
     }
 
     [HttpPut]

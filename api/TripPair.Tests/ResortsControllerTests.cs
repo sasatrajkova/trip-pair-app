@@ -10,6 +10,7 @@ using TripPair.Api.Data;
 using TripPair.Api.Helpers;
 using TripPair.Api.Interfaces;
 using TripPair.Api.Models;
+using TripPair.Tests.Helpers;
 using Xunit;
 using static TripPair.Tests.Helpers.ResortsControllerHelper;
 
@@ -33,13 +34,13 @@ public class ResortsControllerTests
             .Setup(repo => repo.GetAllResorts())
             .ReturnsAsync(availableResorts);
 
-        var resortController =
+        var resortsController =
             new ResortsController(_resortRepositoryStub.Object, _mapper);
 
         var expectedResortDtosCount = availableResorts.Count;
 
         //Act: call the method
-        var result = await resortController.GetAllResorts();
+        var result = await resortsController.GetAllResorts();
         var obj = result.Value as IEnumerable<ResortDto>;
 
         //Assert: compare expected result with actual
@@ -57,13 +58,13 @@ public class ResortsControllerTests
             .Setup(repo => repo.GetResortsBySearch(It.IsAny<string>()))
             .ReturnsAsync((string s) => availableResorts.Where(r => r.Name == s));
 
-        var resortController =
+        var resortsController =
             new ResortsController(_resortRepositoryStub.Object, _mapper);
 
         var expectedResortDtos = _mapper.Map<List<ResortDto>>(availableResorts.Where(r => r.Name == "resort1"));
 
         //Act: call the method
-        var result = await resortController.GetResortsBySearch("resort1");
+        var result = await resortsController.GetResortsBySearch("resort1");
         var obj = result.Value as List<ResortDto>;
 
         //Assert: compare expected result with actual
@@ -82,14 +83,14 @@ public class ResortsControllerTests
             .Setup(repo => repo.GetResortsBySearch(It.IsAny<string>()))
             .ReturnsAsync((string s) => availableResorts.Where(r => r.Location.Name == s));
 
-        var resortController =
+        var resortsController =
             new ResortsController(_resortRepositoryStub.Object, _mapper);
 
         var expectedResortDtos =
             _mapper.Map<List<ResortDto>>(availableResorts.Where(r => r.Location.Name == "location1"));
 
         //Act: call the method
-        var result = await resortController.GetResortsBySearch("location1");
+        var result = await resortsController.GetResortsBySearch("location1");
         var obj = result.Value as List<ResortDto>;
 
         //Assert: compare expected result with actual
@@ -107,13 +108,13 @@ public class ResortsControllerTests
             .Setup(repo => repo.GetResortsBySearch(It.IsAny<string>()))
             .ReturnsAsync((string s) => availableResorts.Where(r => r.Climate == s));
 
-        var resortController =
+        var resortsController =
             new ResortsController(_resortRepositoryStub.Object, _mapper);
 
         var expectedResortDtos = _mapper.Map<List<ResortDto>>(availableResorts.Where(r => r.Climate == "climate1"));
 
         //Act: call the method
-        var result = await resortController.GetResortsBySearch("climate1");
+        var result = await resortsController.GetResortsBySearch("climate1");
         var obj = result.Value as List<ResortDto>;
 
         //Assert: compare expected result with actual
@@ -131,13 +132,13 @@ public class ResortsControllerTests
             .Setup(repo => repo.GetResortById(It.IsAny<int>()))
             .ReturnsAsync((int i) => availableResorts.FirstOrDefault(r => r.Id == i));
 
-        var resortController =
+        var resortsController =
             new ResortsController(_resortRepositoryStub.Object, _mapper);
 
         var expectedResortDto = _mapper.Map<ResortDto>(availableResorts.FirstOrDefault(r => r.Id == 1));
 
         //Act: call the method
-        var result = await resortController.GetResort(1) as OkObjectResult;
+        var result = await resortsController.GetResort(1) as OkObjectResult;
         var obj = result?.Value as ResortDto;
 
         //Assert: compare expected result with actual
@@ -155,11 +156,11 @@ public class ResortsControllerTests
             .Setup(repo => repo.GetResortById(It.IsAny<int>()))
             .ReturnsAsync((int i) => availableResorts.FirstOrDefault(r => r.Id == i));
 
-        var resortController =
+        var resortsController =
             new ResortsController(_resortRepositoryStub.Object, _mapper);
 
         //Act: call the method
-        var result = await resortController.GetResort(100);
+        var result = await resortsController.GetResort(100);
 
         //Assert: compare expected result with actual
         result.Should().BeOfType<NotFoundResult>();
@@ -170,7 +171,7 @@ public class ResortsControllerTests
     public async Task CreateResort_WithCreatedResort_ReturnsOkResponseWithCreatedResortDto()
     {
         //Arrange: prepare data
-        var existingLocation = CreateLocation(1, "location5", "month1");
+        var existingLocation = LocationsControllerHelper.CreateLocation(1, "location5", "month1");
 
         var resortToCreate = new ResortCreateDto
         {
@@ -188,13 +189,13 @@ public class ResortsControllerTests
                 LocationId = r.LocationId
             });
 
-        var resortController =
+        var resortsController =
             new ResortsController(_resortRepositoryStub.Object, _mapper);
 
         var expectedResortDto = _mapper.Map<ResortDto>(_mapper.Map<Resort>(resortToCreate));
 
         //Act: call the method
-        var result = await resortController.CreateResort(resortToCreate) as OkObjectResult;
+        var result = await resortsController.CreateResort(resortToCreate) as OkObjectResult;
         var obj = result?.Value as ResortDto;
 
         //Assert: compare expected result with actual
@@ -215,13 +216,13 @@ public class ResortsControllerTests
                 LocationId = r.LocationId
             });
 
-        var resortController =
+        var resortsController =
             new ResortsController(_resortRepositoryStub.Object, _mapper);
 
-        resortController.ModelState.AddModelError("", "Model state invalid");
+        resortsController.ModelState.AddModelError("", "Model state invalid");
 
         //Act: call the method
-        var result = await resortController.CreateResort(new ResortCreateDto());
+        var result = await resortsController.CreateResort(new ResortCreateDto());
 
         //Assert: compare expected result with actual
         result.Should().BeOfType<BadRequestResult>();
@@ -240,13 +241,13 @@ public class ResortsControllerTests
                 LocationId = r.LocationId
             });
 
-        var resortController =
+        var resortsController =
             new ResortsController(_resortRepositoryStub.Object, _mapper);
 
-        resortController.ModelState.AddModelError("", "Resort already exists");
+        resortsController.ModelState.AddModelError("", "Resort already exists");
 
         //Act: call the method
-        var result = await resortController.CreateResort(new ResortCreateDto());
+        var result = await resortsController.CreateResort(new ResortCreateDto());
 
         //Assert: compare expected result with actual
         result.Should().BeOfType<BadRequestResult>();
@@ -262,13 +263,13 @@ public class ResortsControllerTests
             .Setup(repo => repo.DeleteResort(It.IsAny<int>()))
             .ReturnsAsync((int i) => availableResorts.FirstOrDefault(r => r.Id == i));
 
-        var resortController =
+        var resortsController =
             new ResortsController(_resortRepositoryStub.Object, _mapper);
 
         var expectedResortDto = _mapper.Map<ResortDto>(availableResorts.FirstOrDefault(r => r.Id == 1));
 
         //Act: call the method
-        var result = await resortController.DeleteResort(1) as OkObjectResult;
+        var result = await resortsController.DeleteResort(1) as OkObjectResult;
         var obj = result?.Value as ResortDto;
 
         //Assert: compare expected result with actual
@@ -286,11 +287,11 @@ public class ResortsControllerTests
             .Setup(repo => repo.DeleteResort(It.IsAny<int>()))
             .ReturnsAsync((int i) => availableResorts.FirstOrDefault(r => r.Id == i));
 
-        var resortController =
+        var resortsController =
             new ResortsController(_resortRepositoryStub.Object, _mapper);
 
         //Act: call the method
-        var result = await resortController.DeleteResort(100);
+        var result = await resortsController.DeleteResort(100);
 
         //Assert: compare expected result with actual
         result.Should().BeOfType<NotFoundResult>();

@@ -34,7 +34,7 @@ public class LocationRepository : ILocationRepository
         return location;
     }
 
-    public async Task<IEnumerable<Month?>> GetLocationMonths(int locationId)
+    public async Task<IEnumerable<Month>> GetLocationMonths(int locationId)
     {
         var locationMonths = await _db.LocationMonths.Where(lm => lm.LocationId == locationId).Select(lm => lm.Month)
             .ToListAsync();
