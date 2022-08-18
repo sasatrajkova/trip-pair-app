@@ -14,10 +14,10 @@ public static class LocationsControllerHelper
 
         return new List<Location> {location1, location2, location3};
     }
-    
+
     public static IEnumerable<LocationMonth> ListOfLocationMonths()
     {
-        var locationMonth1 = CreateLocationMonth(1,  1);
+        var locationMonth1 = CreateLocationMonth(1, 1);
         var locationMonth2 = CreateLocationMonth(new Random().Next(), 2);
 
         return new List<LocationMonth> {locationMonth1, locationMonth2};
