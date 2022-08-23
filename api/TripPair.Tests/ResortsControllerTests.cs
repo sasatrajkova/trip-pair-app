@@ -1,16 +1,13 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Moq;
 using TripPair.Api.Controllers;
 using TripPair.Api.Data;
 using TripPair.Api.Helpers;
 using TripPair.Api.Interfaces;
 using TripPair.Api.Models;
-using TripPair.Tests.Helpers;
 using Xunit;
 using static TripPair.Tests.Helpers.ResortsControllerHelper;
 
@@ -23,277 +20,318 @@ public class ResortsControllerTests
     private readonly Mock<IResortRepository> _resortRepositoryStub = new();
 
     //Naming convention: UnitOfWork_StateUnderTest_ExpectedBehavior()
-
+    
     [Fact]
-    public async Task GetAllResorts_Always_ReturnsOkResponseWithAllResortDtos()
+    public async Task GetAllResorts_Always_CallsRepoFunctionOnce()
     {
         //Arrange: prepare data
-        var availableResorts = ListOfResorts().ToList();
-
-        _resortRepositoryStub
-            .Setup(repo => repo.GetAllResorts())
-            .ReturnsAsync(availableResorts);
-
         var resortsController =
             new ResortsController(_resortRepositoryStub.Object, _mapper);
+        
+        //Act: call the method
+        await resortsController.GetAllResorts();
 
-        var expectedResortDtosCount = availableResorts.Count;
-
+        //Assert: compare expected result with actual
+        _resortRepositoryStub.Verify(repo => repo.GetAllResorts(), Times.Once);
+    }
+    
+    [Fact]
+    public async Task GetAllResorts_Always_ReturnsOk()
+    {
+        //Arrange: prepare data
+        var resortsController =
+            new ResortsController(_resortRepositoryStub.Object, _mapper);
+        
         //Act: call the method
         var result = await resortsController.GetAllResorts();
-        var obj = result.Value as IEnumerable<ResortDto>;
+        var statusResult = result.StatusCode;
 
         //Assert: compare expected result with actual
-        obj?.Count().Should().Be(expectedResortDtosCount);
+        statusResult.Should().Be(200);
     }
-
-    //TODO: Clarify if this is necessary - this is testing more the repo not controller
+    
     [Fact]
-    public async Task GetResortsBySearch_WithMatchingResortNames_ReturnsOkResponseWithExpectedResortDtos()
+    public async Task GetResortsBySearch_Always_CallsRepoFunctionWithGivenParameterOnce()
     {
         //Arrange: prepare data
-        var availableResorts = ListOfResorts();
-
-        _resortRepositoryStub
-            .Setup(repo => repo.GetResortsBySearch(It.IsAny<string>()))
-            .ReturnsAsync((string s) => availableResorts.Where(r => r.Name == s));
-
         var resortsController =
             new ResortsController(_resortRepositoryStub.Object, _mapper);
+        
+        //Act: call the method
+        await resortsController.GetResortsBySearch("resort1");
 
-        var expectedResortDtos = _mapper.Map<List<ResortDto>>(availableResorts.Where(r => r.Name == "resort1"));
-
+        //Assert: compare expected result with actual
+        _resortRepositoryStub.Verify(repo => repo.GetResortsBySearch("resort1"), Times.Once);
+    }
+    
+    [Fact]
+    public async Task GetResortsBySearch_Always_ReturnsOk()
+    {
+        //Arrange: prepare data
+        var resortsController =
+            new ResortsController(_resortRepositoryStub.Object, _mapper);
+        
         //Act: call the method
         var result = await resortsController.GetResortsBySearch("resort1");
-        var obj = result.Value as List<ResortDto>;
+        var statusResult = result.StatusCode;
 
         //Assert: compare expected result with actual
-        obj?.Should().BeEquivalentTo(expectedResortDtos);
-        result.Should().BeOfType<OkObjectResult>();
+        statusResult.Should().Be(200);
     }
 
-    //TODO: Clarify if this is necessary - this is testing more the repo not controller
     [Fact]
-    public async Task GetResortsBySearch_WithMatchingResortLocations_ReturnsOkResponseWithExpectedResortDtos()
+    public async Task GetResort_Always_CallsRepoFunctionWithPassedParameterOnce()
     {
         //Arrange: prepare data
-        var availableResorts = ListOfResorts();
-
-        _resortRepositoryStub
-            .Setup(repo => repo.GetResortsBySearch(It.IsAny<string>()))
-            .ReturnsAsync((string s) => availableResorts.Where(r => r.Location.Name == s));
-
         var resortsController =
             new ResortsController(_resortRepositoryStub.Object, _mapper);
-
-        var expectedResortDtos =
-            _mapper.Map<List<ResortDto>>(availableResorts.Where(r => r.Location.Name == "location1"));
-
+        
         //Act: call the method
-        var result = await resortsController.GetResortsBySearch("location1");
-        var obj = result.Value as List<ResortDto>;
-
+        await resortsController.GetResort(100);
+    
         //Assert: compare expected result with actual
-        obj?.Should().BeEquivalentTo(expectedResortDtos);
-        result.Should().BeOfType<OkObjectResult>();
+        _resortRepositoryStub.Verify(repo => repo.GetResortById(100), Times.Once);
     }
-
+    
     [Fact]
-    public async Task GetResortsBySearch_WithMatchingResortClimates_ReturnsOkResponseWithExpectedResortDtos()
+    public async Task GetResort_WithExistingResort_ReturnsOk()
     {
         //Arrange: prepare data
-        var availableResorts = ListOfResorts();
-
-        _resortRepositoryStub
-            .Setup(repo => repo.GetResortsBySearch(It.IsAny<string>()))
-            .ReturnsAsync((string s) => availableResorts.Where(r => r.Climate == s));
-
-        var resortsController =
-            new ResortsController(_resortRepositoryStub.Object, _mapper);
-
-        var expectedResortDtos = _mapper.Map<List<ResortDto>>(availableResorts.Where(r => r.Climate == "climate1"));
-
-        //Act: call the method
-        var result = await resortsController.GetResortsBySearch("climate1");
-        var obj = result.Value as List<ResortDto>;
-
-        //Assert: compare expected result with actual
-        obj?.Should().BeEquivalentTo(expectedResortDtos);
-        result.Should().BeOfType<OkObjectResult>();
-    }
-
-    [Fact]
-    public async Task GetResort_WithExistingResort_ReturnsOkResponseWithExpectedResortDto()
-    {
-        //Arrange: prepare data
-        var availableResorts = ListOfResorts();
-
         _resortRepositoryStub
             .Setup(repo => repo.GetResortById(It.IsAny<int>()))
-            .ReturnsAsync((int i) => availableResorts.FirstOrDefault(r => r.Id == i));
-
+            .ReturnsAsync(new Resort());
+        
         var resortsController =
             new ResortsController(_resortRepositoryStub.Object, _mapper);
-
-        var expectedResortDto = _mapper.Map<ResortDto>(availableResorts.FirstOrDefault(r => r.Id == 1));
-
+        
         //Act: call the method
-        var result = await resortsController.GetResort(1) as OkObjectResult;
-        var obj = result?.Value as ResortDto;
+        var result = await resortsController.GetResort(1);
+        var statusCodeResult = (IStatusCodeActionResult)result;
+        var statusCode = statusCodeResult.StatusCode;
 
         //Assert: compare expected result with actual
-        obj.Should().BeEquivalentTo(expectedResortDto);
-        result.Should().BeOfType<OkObjectResult>();
+        statusCode.Should().Be(200);
     }
-
+    
     [Fact]
     public async Task GetResort_WithNonExistingResort_ReturnsNotFound()
     {
         //Arrange: prepare data
-        var availableResorts = ListOfResorts();
-
         _resortRepositoryStub
             .Setup(repo => repo.GetResortById(It.IsAny<int>()))
-            .ReturnsAsync((int i) => availableResorts.FirstOrDefault(r => r.Id == i));
+            .ReturnsAsync((Resort)null!);
+        
+        var resortsController =
+            new ResortsController(_resortRepositoryStub.Object, _mapper);
+        
+        //Act: call the method
+        var result = await resortsController.GetResort(1000);
+        var statusCodeResult = (IStatusCodeActionResult)result;
+        var statusCode = statusCodeResult.StatusCode;
+
+        //Assert: compare expected result with actual
+        statusCode.Should().Be(404);
+    }
+    
+    
+    //TODO: Not functioning, fix, need help
+    [Fact]
+    public async Task CreateResort_WithValidRequest_CallsRepoFunctionOnce()
+    {
+        //Arrange: prepare data
+        _resortRepositoryStub
+            .Setup(repo => repo.CreateResort(It.IsAny<Resort>()))
+            .ReturnsAsync((Resort r) => r);
 
         var resortsController =
             new ResortsController(_resortRepositoryStub.Object, _mapper);
-
-        //Act: call the method
-        var result = await resortsController.GetResort(100);
-
-        //Assert: compare expected result with actual
-        result.Should().BeOfType<NotFoundResult>();
-    }
-
-    //TODO Check if this is a productive test
-    [Fact]
-    public async Task CreateResort_WithCreatedResort_ReturnsOkResponseWithCreatedResortDto()
-    {
-        //Arrange: prepare data
-        var existingLocation = LocationsControllerHelper.CreateLocation(1, "location5", "month1");
-
-        var resortToCreate = new ResortCreateDto
+        
+        var resortCreateDto = new ResortCreateDto
         {
-            Name = "resort5",
-            Climate = "climate2",
-            Image = "resort5.jpg",
-            LocationId = existingLocation.Id
+            Climate = "Test",
+            Image = "Test",
+            LocationId = 1,
+            Name = "Test"
         };
 
-        _resortRepositoryStub
-            .Setup(repo => repo.CreateResort(It.IsAny<Resort>()))
-            .ReturnsAsync((Resort r) => new Resort
-            {
-                Id = r.Id, Name = r.Name, Climate = r.Climate, Image = r.Image, Location = r.Location,
-                LocationId = r.LocationId
-            });
-
-        var resortsController =
-            new ResortsController(_resortRepositoryStub.Object, _mapper);
-
-        var expectedResortDto = _mapper.Map<ResortDto>(_mapper.Map<Resort>(resortToCreate));
-
         //Act: call the method
-        var result = await resortsController.CreateResort(resortToCreate) as OkObjectResult;
-        var obj = result?.Value as ResortDto;
+        await resortsController.CreateResort(resortCreateDto);
 
         //Assert: compare expected result with actual
-        obj.Should().BeEquivalentTo(expectedResortDto);
-        result.Should().BeOfType<OkObjectResult>();
+        _resortRepositoryStub.Verify(repo => repo.CreateResort(_mapper.Map<Resort>(resortCreateDto)), Times.Once);
     }
-
-    //TODO Check if this is a productive test
+    
+    //TODO: Not correct, fix
     [Fact]
-    public async Task CreateResort_WithInvalidRequest_ReturnsBadRequest()
+    public async Task CreateResort_WithValidRequest_ReturnsOk()
     {
         //Arrange: prepare data
-        _resortRepositoryStub
-            .Setup(repo => repo.CreateResort(It.IsAny<Resort>()))
-            .ReturnsAsync((Resort r) => new Resort
-            {
-                Id = r.Id, Name = r.Name, Climate = r.Climate, Image = r.Image, Location = r.Location,
-                LocationId = r.LocationId
-            });
-
         var resortsController =
             new ResortsController(_resortRepositoryStub.Object, _mapper);
-
-        resortsController.ModelState.AddModelError("", "Model state invalid");
 
         //Act: call the method
         var result = await resortsController.CreateResort(new ResortCreateDto());
-
+        var statusCodeResult = (IStatusCodeActionResult)result;
+        var statusCode = statusCodeResult.StatusCode;
+        
         //Assert: compare expected result with actual
-        result.Should().BeOfType<BadRequestResult>();
+        statusCode.Should().Be(200);
     }
-
-    //TODO Check if this is a productive test
+    
+    //TODO: Not functioning, fix
     [Fact]
-    public async Task CreateResort_WithExistingResort_ReturnsResortAlreadyExists()
+    public async Task CreateResort_WithInvalidRequest_NeverCallsRepoFunction()
     {
         //Arrange: prepare data
-        _resortRepositoryStub
-            .Setup(repo => repo.CreateResort(It.IsAny<Resort>()))
-            .ReturnsAsync((Resort r) => new Resort
-            {
-                Id = r.Id, Name = r.Name, Climate = r.Climate, Image = r.Image, Location = r.Location,
-                LocationId = r.LocationId
-            });
+        var resortsController =
+            new ResortsController(_resortRepositoryStub.Object, _mapper);
 
+        var resortToCreate = new ResortCreateDto
+        {
+            Climate = "test",
+            Image = "Test",
+            LocationId = -1,
+            Name = ""
+        };
+        
+        //Act: call the method
+        await resortsController.CreateResort(resortToCreate);
+        
+        //Assert: compare expected result with actual
+        _resortRepositoryStub.Verify(repo => repo.CreateResort(_mapper.Map<Resort>(resortToCreate)), Times.Never);
+    }
+    
+    //TODO: Not correct, fix
+    [Fact]
+    public async Task CreateResort_WithInvalidRequest_ReturnsError()
+    {
+        //Arrange: prepare data
+        var resortsController =
+            new ResortsController(_resortRepositoryStub.Object, _mapper);
+        
+        resortsController.ModelState.AddModelError("","");
+
+        //Act: call the method
+        var result = await resortsController.CreateResort(new ResortCreateDto());
+        var statusCodeResult = (IStatusCodeActionResult)result;
+        var statusCode = statusCodeResult.StatusCode;
+        
+        //Assert: compare expected result with actual
+        statusCode.Should().Be(400);
+    }
+
+    //TODO Not functioning, fix
+    [Fact]
+    public async Task CreateResort_WithExistingResort_NeverCallsRepoFunction()
+    {
+        //Arrange: prepare data
         var resortsController =
             new ResortsController(_resortRepositoryStub.Object, _mapper);
 
         resortsController.ModelState.AddModelError("", "Resort already exists");
 
         //Act: call the method
-        var result = await resortsController.CreateResort(new ResortCreateDto());
+        await resortsController.CreateResort(new ResortCreateDto());
 
         //Assert: compare expected result with actual
-        result.Should().BeOfType<BadRequestResult>();
+        _resortRepositoryStub.Verify(repo => repo.CreateResort(new Resort()), Times.Never);
     }
-
+    
+    //TODO: Not correct, fix
     [Fact]
-    public async Task DeleteResort_WithExistingResort_ReturnsOkResponseWithDeletedResortDto()
+    public async Task CreateResort_WithExistingResort_ReturnsError()
     {
         //Arrange: prepare data
-        var availableResorts = ListOfResorts();
-
-        _resortRepositoryStub
-            .Setup(repo => repo.DeleteResort(It.IsAny<int>()))
-            .ReturnsAsync((int i) => availableResorts.FirstOrDefault(r => r.Id == i));
-
         var resortsController =
             new ResortsController(_resortRepositoryStub.Object, _mapper);
-
-        var expectedResortDto = _mapper.Map<ResortDto>(availableResorts.FirstOrDefault(r => r.Id == 1));
+        
+        resortsController.ModelState.AddModelError("","");
 
         //Act: call the method
-        var result = await resortsController.DeleteResort(1) as OkObjectResult;
-        var obj = result?.Value as ResortDto;
-
+        var result = await resortsController.CreateResort(new ResortCreateDto());
+        var statusCodeResult = (IStatusCodeActionResult)result;
+        var statusCode = statusCodeResult.StatusCode;
+        
         //Assert: compare expected result with actual
-        obj.Should().BeEquivalentTo(expectedResortDto);
-        result.Should().BeOfType<OkObjectResult>();
+        statusCode.Should().Be(400);
     }
 
     [Fact]
-    public async Task DeleteResort_WithNonExistingResort_ReturnsNotFound()
+    public async Task DeleteResort_WithExistingResort_CallsRepoFunctionWithGivenParameterOnce()
     {
         //Arrange: prepare data
         var availableResorts = ListOfResorts();
-
+    
         _resortRepositoryStub
             .Setup(repo => repo.DeleteResort(It.IsAny<int>()))
-            .ReturnsAsync((int i) => availableResorts.FirstOrDefault(r => r.Id == i));
+            .ReturnsAsync(new Resort());
+    
+        var resortsController =
+            new ResortsController(_resortRepositoryStub.Object, _mapper);
+        
+        //Act: call the method
+        await resortsController.DeleteResort(1);
+
+        //Assert: compare expected result with actual
+        _resortRepositoryStub.Verify(repo => repo.DeleteResort(1), Times.Once);
+
+    }
+    
+    [Fact]
+    public async Task DeleteResort_WithExistingResort_ReturnsOk()
+    {
+        //Arrange: prepare data
+        _resortRepositoryStub
+            .Setup(repo => repo.DeleteResort(It.IsAny<int>()))
+            .ReturnsAsync(new Resort());
 
         var resortsController =
             new ResortsController(_resortRepositoryStub.Object, _mapper);
+        
+        //Act: call the method
+        var result = await resortsController.DeleteResort(1);
+        var statusCodeResult = (IStatusCodeActionResult)result;
+        var statusCode = statusCodeResult.StatusCode;
+        
+        //Assert: compare expected result with actual
+        statusCode.Should().Be(200);
+    }
+    
+    [Fact]
+    public async Task DeleteResort_WithNonExistingResort_CallsRepoFunctionWithGivenParameterOnce()
+    {
+        //Arrange: prepare data
+        _resortRepositoryStub
+            .Setup(repo => repo.DeleteResort(It.IsAny<int>()))
+            .ReturnsAsync((Resort)null!);
 
+        var resortsController =
+            new ResortsController(_resortRepositoryStub.Object, _mapper);
+    
+        //Act: call the method
+        await resortsController.DeleteResort(100);
+
+        //Assert: compare expected result with actual
+        _resortRepositoryStub.Verify(repo => repo.DeleteResort(100), Times.Once);
+    }
+    
+    [Fact]
+    public async Task DeleteResort_WithNonExistingResort_NotFound()
+    {
+        //Arrange: prepare data
+        _resortRepositoryStub
+            .Setup(repo => repo.DeleteResort(It.IsAny<int>()))
+            .ReturnsAsync((Resort)null!);
+
+        var resortsController =
+            new ResortsController(_resortRepositoryStub.Object, _mapper);
+    
         //Act: call the method
         var result = await resortsController.DeleteResort(100);
-
+        var statusCodeResult = (IStatusCodeActionResult)result;
+        var statusCode = statusCodeResult.StatusCode;
+    
         //Assert: compare expected result with actual
-        result.Should().BeOfType<NotFoundResult>();
+        statusCode.Should().Be(404);
     }
 }
