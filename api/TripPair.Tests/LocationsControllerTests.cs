@@ -25,7 +25,7 @@ public class LocationsControllerTests
     //Naming convention: UnitOfWork_StateUnderTest_ExpectedBehavior()
 
     [Fact]
-    public async Task GetAllLocations_Always_ReturnsOkResponseWithAllLocationDtos()
+    public async Task GetAllLocations_Always_CallsRepoFunctionOnceAndReturnsOk()
     {
         //Arrange: prepare data
         var availableLocations = LocationsControllerHelper.ListOfLocations().ToList();
@@ -48,7 +48,7 @@ public class LocationsControllerTests
     }
 
     [Fact]
-    public async Task GetLocation_WithExistingLocation_ReturnsOkResponseWithExpectedLocationDto()
+    public async Task GetLocation_WithExistingLocation_CallsRepoFunctionOnceAndReturnsOk()
     {
         //Arrange: prepare data
         var availableLocations = LocationsControllerHelper.ListOfLocations().ToList();
@@ -72,7 +72,7 @@ public class LocationsControllerTests
     }
 
     [Fact]
-    public async Task GetLocation_WithNonExistingLocation_ReturnsNotFound()
+    public async Task GetLocation_WithNonExistingLocation_NeverCallsRepoFunctionAndReturnsNotFound()
     {
         //Arrange: prepare data
         var availableLocations = LocationsControllerHelper.ListOfLocations().ToList();
@@ -92,7 +92,7 @@ public class LocationsControllerTests
     }
 
     [Fact]
-    public async Task GetLocationMonths_WithExistingMonths_ReturnsOkResponseWithExpectedMonthDtos()
+    public async Task GetLocationMonths_Always_CallsRepoFunctionOnceAndReturnsOkResponse()
     {
         //Arrange: prepare data
         var availableLocationMonths = LocationsControllerHelper.ListOfLocationMonths();
@@ -116,9 +116,8 @@ public class LocationsControllerTests
         result.Should().BeOfType<OkObjectResult>();
     }
 
-    //TODO: check validity
     [Fact]
-    public async Task UpdateLocation_WithExistingLocation_ReturnsOkResponseWithExpectedLocationDto()
+    public async Task UpdateLocation_WithUpdatedLocation_CallsRepoFunctionOnceAndReturnsOk()
     {
         //Arrange: prepare data
         var existingLocation = LocationsControllerHelper.ListOfLocations().First(l => l.Id == 1);
@@ -158,7 +157,7 @@ public class LocationsControllerTests
     }
 
     [Fact]
-    public async Task UpdateLocation_WithInvalidRequest_ReturnsBadRequest()
+    public async Task UpdateLocation_WithInvalidRequest_NeverCallsRepoFunctionAndReturnsBadRequest()
     {
         //Arrange: prepare data
         var availableLocations = LocationsControllerHelper.ListOfLocations().ToList();
@@ -180,7 +179,7 @@ public class LocationsControllerTests
     }
 
     [Fact]
-    public async Task UpdateLocation_WithNonExistingLocation_ReturnsNotFound()
+    public async Task UpdateLocation_WithNonExistingLocation_CallsRepoFunctionOnceAndReturnsNotFound()
     {
         //Arrange: prepare data
         var availableLocations = LocationsControllerHelper.ListOfLocations().ToList();
@@ -200,7 +199,7 @@ public class LocationsControllerTests
     }
 
     [Fact]
-    public async Task CreateLocation_WithCreatedLocation_ReturnsOkResponseWithCreatedLocationDto()
+    public async Task CreateLocation_WithCreatedLocation_CallsRepoFunctionOnceAndReturnsOk()
     {
         //Arrange: prepare data
         var locationToCreate = new LocationCreateDto
@@ -231,9 +230,8 @@ public class LocationsControllerTests
         result.Should().BeOfType<OkObjectResult>();
     }
 
-    //TODO: check necessity
     [Fact]
-    public async Task CreateLocation_WithInvalidRequest_ReturnsBadRequest()
+    public async Task CreateLocation_WithInvalidRequest_NeverCallsRepoFunctionAndReturnsBadRequest()
     {
         //Arrange: prepare data
         _locationRepositoryStub
@@ -256,9 +254,8 @@ public class LocationsControllerTests
         result.Should().BeOfType<BadRequestResult>();
     }
 
-    //TODO: Check necessity: duplication with CreateLocation_WithInvalidRequest_ReturnsBadRequest()
     [Fact]
-    public async Task CreateLocation_WithExistingLocation_ReturnsLocationAlreadyExists()
+    public async Task CreateLocation_WithExistingLocation_NeverCallsRepoFunctionAndReturnsError()
     {
         //Arrange: prepare data
         _locationRepositoryStub
@@ -283,7 +280,7 @@ public class LocationsControllerTests
 
 
     [Fact]
-    public async Task DeleteLocation_WithExistingLocation_ReturnsOkResponseWithDeletedLocationDto()
+    public async Task DeleteLocation_WithExistingLocation_CallsRepoFunctionOnceAndReturnsOk()
     {
         //Arrange: prepare data
         var availableLocations = LocationsControllerHelper.ListOfLocations().ToList();
@@ -307,7 +304,7 @@ public class LocationsControllerTests
     }
 
     [Fact]
-    public async Task DeleteLocation_WithNonExistingLocation_ReturnsNotFound()
+    public async Task DeleteLocation_WithNonExistingLocation_CallsRepoFunctionOnceAndReturnsNotFound()
     {
         //Arrange: prepare data
         var availableLocations = LocationsControllerHelper.ListOfLocations().ToList();
