@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using TripPair.Api.Models;
+using static TripPair.Tests.Helpers.LocationsControllerHelper;
+
 
 namespace TripPair.Tests.Helpers;
 
@@ -26,8 +28,7 @@ public static class ResortsControllerHelper
             Name = resortName,
             Climate = climate,
             Image = Guid.NewGuid().ToString(),
-            //TODO: Why does CreateLocation have to be called like this?
-            Location = LocationsControllerHelper.CreateLocation(new Random().Next(), locationName, month),
+            Location = CreateLocation(new Random().Next(), locationName, month),
             LocationId = new Random().Next()
         };
     }

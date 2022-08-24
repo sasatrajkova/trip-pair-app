@@ -113,16 +113,21 @@ public class LocationsControllerTests
     public async Task UpdateLocation_WithGivenParameter_CallsRepoFunctionOnce()
     {
         //Arrange: prepare data
+        var locationCreateDto = new LocationCreateDto
+        {
+            Name = "Test",
+            GoodMonthsDescription = "Test",
+            LocationMonths = Array.Empty<LocationMonthCreateDto>()
+        };
+        
         var locationsController =
             new LocationsController(_locationRepositoryStub.Object, _mapper);
-
-        var updatedLocation = new Location();
-
+        
         //Act: call the method
-        await locationsController.UpdateLocation(1, _mapper.Map<LocationCreateDto>(updatedLocation));
+        await locationsController.UpdateLocation(1, locationCreateDto);
 
         //Assert: compare expected result with actual
-        _locationRepositoryStub.Verify(repo => repo.UpdateLocation(1, updatedLocation), Times.Once);
+        _locationRepositoryStub.Verify(repo => repo.UpdateLocation(1, _mapper.Map<Location>(locationCreateDto)), Times.Once);
     }
 
     [Fact]
@@ -150,7 +155,12 @@ public class LocationsControllerTests
     public async Task UpdateLocation_WithInvalidRequest_NeverCallsRepoFunctionAndReturnsBadRequest()
     {
         //Arrange: prepare data
-        var updatedLocation = new Location();
+        var locationCreateDto = new LocationCreateDto
+        {
+            Name = "Test",
+            GoodMonthsDescription = "Test",
+            LocationMonths = Array.Empty<LocationMonthCreateDto>()
+        };
 
         _locationRepositoryStub
             .Setup(repo => repo.UpdateLocation(It.IsAny<int>(), It.IsAny<Location>()))
@@ -162,12 +172,12 @@ public class LocationsControllerTests
         locationsController.ModelState.AddModelError("", "");
 
         //Act: call the method
-        var result = await locationsController.UpdateLocation(100, _mapper.Map<LocationCreateDto>(updatedLocation));
+        var result = await locationsController.UpdateLocation(100, locationCreateDto);
         var statusCodeResult = (IStatusCodeActionResult) result;
         var statusCode = statusCodeResult.StatusCode;
 
         //Assert: compare expected result with actual
-        _locationRepositoryStub.Verify(repo => repo.UpdateLocation(100, updatedLocation), Times.Never);
+        _locationRepositoryStub.Verify(repo => repo.UpdateLocation(100, _mapper.Map<Location>(locationCreateDto)), Times.Never);
         statusCode.Should().Be(400);
     }
 
@@ -175,7 +185,6 @@ public class LocationsControllerTests
     public async Task UpdateLocation_WithNonExistingLocation_ReturnsNotFound()
     {
         //Arrange: prepare data
-
         _locationRepositoryStub
             .Setup(repo => repo.UpdateLocation(It.IsAny<int>(), It.IsAny<Location>()))
             .ReturnsAsync((Location) null!);
