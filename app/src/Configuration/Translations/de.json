@@ -1,3 +1,11 @@
 {
-  "language": { "de": "de", "en": "en", "slo": "slo" }
+  "language": { "de": "de", "en": "en", "slo": "slo" },
+  "common": {
+    "search": "Suchen"
+  },
+  "pages": {
+    "landing": {
+      "preface": "Ihre nächste Reise steht an."
+    }
+  }
 }

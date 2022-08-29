@@ -1,11 +1,13 @@
 import React, { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   searchValue?: string;
 }
 const SearchBar: React.FC<Props> = (props) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [searchValue, setSearchValue] = React.useState("");
 
   const changeSearchValue = useCallback(
@@ -31,7 +33,7 @@ const SearchBar: React.FC<Props> = (props) => {
       <input
         className="border-2 border-gray-300 h-10 w-full px-5 rounded-lg text-sm focus:outline-none"
         type="search"
-        placeholder="Search"
+        placeholder={t("common.search")}
         defaultValue={props.searchValue}
         onChange={changeSearchValue}
         onKeyDown={handleKeyDown}
