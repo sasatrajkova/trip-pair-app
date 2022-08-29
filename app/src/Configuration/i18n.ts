@@ -2,8 +2,7 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import * as translationDe from "./Translations/de.json";
 import * as translationEn from "./Translations/en.json";
-import translationSlo from "./Translations/slo.json";
-
+import * as translationSlo from "./Translations/slo.json";
 
 i18n.use(initReactI18next).init({
   fallbackLng: "en",
