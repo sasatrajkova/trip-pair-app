@@ -25,7 +25,7 @@ const ResortInventory: React.FC<Props> = (props) => {
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 px-8 pt-8">
       {resorts.map((resort) => (
         <ResortCard
-          key={resort.name}
+          key={resort.id}
           name={resort.name}
           climate={resort.climate}
           image={resort.image}
