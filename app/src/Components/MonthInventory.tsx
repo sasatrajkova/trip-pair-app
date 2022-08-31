@@ -11,7 +11,7 @@ const MonthInventory: React.FC<Props> = (props) => {
       {location.locationMonths.map((locationMonth) => (
         <span
           className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2"
-          key={locationMonth.month.name}
+          key={locationMonth.month.id}
         >
           {locationMonth.month.name}
         </span>
