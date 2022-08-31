@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import MonthCollection from "./MonthCollection";
+import MonthInventory from "./MonthInventory";
 import { ClimateIcon } from "../Icons/ClimateIcon";
 import { LocationIcon } from "../Icons/LocationIcon";
 import { locationDto } from "../Models/locationDto";
@@ -26,7 +26,7 @@ const ResortCard: React.FC<Props> = (props) => {
           <p className="font-bold text-xl px-2 py-2">{name}</p>
           <LocationIcon label={location.name}/>
           <ClimateIcon label={climate}/>
-          <MonthCollection location={location} />
+          <MonthInventory location={location} />
         </div>
       </Link>
     </div>
