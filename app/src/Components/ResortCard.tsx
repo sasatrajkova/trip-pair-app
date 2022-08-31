@@ -1,31 +1,32 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import MonthCollection from "./MonthCollection";
+import { ClimateIcon } from "../Icons/ClimateIcon";
+import { LocationIcon } from "../Icons/LocationIcon";
+import { locationDto } from "../Models/locationDto";
 
-const ResortCard: React.FC = () => {
+interface Props {
+  name: string;
+  climate: string;
+  image: string;
+  location: locationDto;
+}
+
+const ResortCard: React.FC<Props> = (props) => {
+  const { name, climate, image, location } = props;
+
   return (
     <div className="flex justify-center">
       <Link to="/details/id">
         <div className="max-w-sm rounded overflow-hidden shadow-lg hover:bg-gray-100">
-          <div className="px-6 py-4">
-            <img alt="Sample"></img>
-            <div className="font-bold text-xl mb-2">Lorem ipsum</div>
-            <p className="text-gray-700 text-base">
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-              Voluptatibus quia, nulla! Maiores et perferendis eaque,
-              exercitationem praesentium nihil.
-            </p>
-          </div>
-          <div className="px-6 pt-4 pb-2">
-            <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-              #Lorem
-            </span>
-            <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-              #ipsum
-            </span>
-            <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-              #dolor
-            </span>
-          </div>
+          <img
+            alt={image}
+            src={process.env.PUBLIC_URL + "/Images/" + image}
+          ></img>
+          <p className="font-bold text-xl px-2 py-2">{name}</p>
+          <LocationIcon label={location.name}/>
+          <ClimateIcon label={climate}/>
+          <MonthCollection location={location} />
         </div>
       </Link>
     </div>
