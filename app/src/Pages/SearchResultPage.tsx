@@ -10,7 +10,7 @@ const SearchResultPage: React.FC = () => {
   return (
     <Layout>
       <SearchBar searchValue={searchValue} />
-      <ResortInventory />
+      <ResortInventory searchValue={searchValue} />
     </Layout>
   );
 };
