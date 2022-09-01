@@ -1,10 +1,26 @@
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { locationDto } from "../Models/locationDto";
 import ResortFormItem from "./ResortFormItem";
 
 const ResortForm: React.FC = () => {
+  const [locations, setLocations] = useState<Array<locationDto>>([]);
+
+  useEffect(() => {
+    axios
+      .get<Array<locationDto>>(`/locations`, {
+        baseURL: "https://localhost:7187/api",
+      })
+      .then((response) => {
+        setLocations(response.data);
+      });
+  }, []);
+
+
   return (
     <form className="px-8 md:w-2/3 lg:w-1/3 mx-auto">
       <ResortFormItem label="Resort name" variant={"input"} />
-      <ResortFormItem label="Location" variant={"dropdown"} />
+      <ResortFormItem label="Location" variant={"dropdown"} locations={locations} />
       <ResortFormItem label="Climate" variant={"input"} />
       <ResortFormItem label="Image" variant={"input"} />
       <button
