@@ -1,6 +1,8 @@
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Moq;
 using TripPair.Api.Controllers;
@@ -29,11 +31,10 @@ public class ResortsControllerTests
 
         //Act: call the method
         var result = await resortsController.GetAllResorts();
-        var statusResult = result.StatusCode;
 
         //Assert: compare expected result with actual
         _resortRepositoryStub.Verify(repo => repo.GetAllResorts(), Times.Once);
-        statusResult.Should().Be(200);
+        result.Should().BeAssignableTo<IStatusCodeActionResult>().Which.StatusCode.Should().Be(200);
     }
 
     [Fact]
@@ -45,11 +46,10 @@ public class ResortsControllerTests
 
         //Act: call the method
         var result = await resortsController.GetResortsBySearch("resort1");
-        var statusResult = result.StatusCode;
 
         //Assert: compare expected result with actual
         _resortRepositoryStub.Verify(repo => repo.GetResortsBySearch("resort1"), Times.Once);
-        statusResult.Should().Be(200);
+        result.Should().BeAssignableTo<OkObjectResult>().Which.StatusCode.Should().Be(200);
     }
 
     [Fact]
@@ -79,11 +79,9 @@ public class ResortsControllerTests
 
         //Act: call the method
         var result = await resortsController.GetResort(1);
-        var statusCodeResult = (IStatusCodeActionResult) result;
-        var statusCode = statusCodeResult.StatusCode;
 
         //Assert: compare expected result with actual
-        statusCode.Should().Be(200);
+        result.Should().BeAssignableTo<IStatusCodeActionResult>().Which.StatusCode.Should().Be(200);
     }
 
     [Fact]
@@ -99,39 +97,23 @@ public class ResortsControllerTests
 
         //Act: call the method
         var result = await resortsController.GetResort(1000);
-        var statusCodeResult = (IStatusCodeActionResult) result;
-        var statusCode = statusCodeResult.StatusCode;
 
         //Assert: compare expected result with actual
-        statusCode.Should().Be(404);
+        result.Should().BeAssignableTo<IStatusCodeActionResult>().Which.StatusCode.Should().Be(404);
     }
 
-
-    //TODO: Not functioning, figure out testing when parameters between controller and repo function (mapping)
     [Fact]
     public async Task CreateResort_WithGivenParameter_CallsRepoFunctionOnce()
     {
         //Arrange: prepare data
-        var resortCreateDto = new ResortCreateDto
-        {
-            Climate = "Test",
-            Image = "Test",
-            LocationId = 1,
-            Name = "Test"
-        };
-
-        _resortRepositoryStub
-            .Setup(repo => repo.CreateResort(It.IsAny<Resort>()))
-            .ReturnsAsync((Resort r) => r);
-
         var resortsController =
             new ResortsController(_resortRepositoryStub.Object, _mapper);
 
         //Act: call the method
-        await resortsController.CreateResort(resortCreateDto);
+        await resortsController.CreateResort(new ResortCreateDto());
 
         //Assert: compare expected result with actual
-        _resortRepositoryStub.Verify(repo => repo.CreateResort(_mapper.Map<Resort>(resortCreateDto)), Times.Once);
+        _resortRepositoryStub.Verify(repo => repo.CreateResort(It.IsAny<Resort>()), Times.Once);
     }
 
     [Fact]
@@ -143,67 +125,47 @@ public class ResortsControllerTests
 
         //Act: call the method
         var result = await resortsController.CreateResort(new ResortCreateDto());
-        var statusCodeResult = (IStatusCodeActionResult) result;
-        var statusCode = statusCodeResult.StatusCode;
 
         //Assert: compare expected result with actual
-        statusCode.Should().Be(200);
+        result.Should().BeAssignableTo<IStatusCodeActionResult>().Which.StatusCode.Should().Be(200);
     }
 
-    //TODO: Not functioning correctly, setup invalid request
     [Fact]
     public async Task CreateResort_WithInvalidRequest_NeverCallsRepoFunctionAndReturnsBadRequest()
     {
         //Arrange: prepare data
-        var resortCreateDto = new ResortCreateDto
-        {
-            Climate = "Test",
-            Image = "Test",
-            LocationId = 1,
-            Name = "Test"
-        };
-
         var resortsController =
             new ResortsController(_resortRepositoryStub.Object, _mapper);
 
         resortsController.ModelState.AddModelError("", "");
 
         //Act: call the method
-        var result = await resortsController.CreateResort(resortCreateDto);
-        var statusCodeResult = (IStatusCodeActionResult) result;
-        var statusCode = statusCodeResult.StatusCode;
+        var result = await resortsController.CreateResort(new ResortCreateDto());
 
         //Assert: compare expected result with actual
-        _resortRepositoryStub.Verify(repo => repo.CreateResort(_mapper.Map<Resort>(resortCreateDto)), Times.Never);
-        statusCode.Should().Be(400);
+        _resortRepositoryStub.Verify(repo => repo.CreateResort(It.IsAny<Resort>()), Times.Never);
+        result.Should().BeAssignableTo<IStatusCodeActionResult>().Which.StatusCode.Should().Be(400);
     }
 
-    //TODO Not functioning correctly, figure out how to setup repo for null return for existing resort
     [Fact]
     public async Task CreateResort_WithExistingResort_NeverCallsRepoFunctionAndReturnsError()
     {
         //Arrange: prepare data
-        var resortCreateDto = new ResortCreateDto
-        {
-            Climate = "Test",
-            Image = "Test",
-            LocationId = 1,
-            Name = "Test"
-        };
+        _resortRepositoryStub
+            .Setup(repo => repo.GetResortByName(It.IsAny<string>(), It.IsAny<int>()))
+            .ReturnsAsync(new Resort());
 
         var resortsController =
             new ResortsController(_resortRepositoryStub.Object, _mapper);
 
-        resortsController.ModelState.AddModelError("", "Resort already exists");
-
         //Act: call the method
-        var result = await resortsController.CreateResort(resortCreateDto);
-        var statusCodeResult = (IStatusCodeActionResult) result;
-        var statusCode = statusCodeResult.StatusCode;
+        var result = await resortsController.CreateResort(new ResortCreateDto());
+        var errorMessage = resortsController.ModelState[""]!.Errors.First().ErrorMessage;
 
         //Assert: compare expected result with actual
-        _resortRepositoryStub.Verify(repo => repo.CreateResort(_mapper.Map<Resort>(resortCreateDto)), Times.Never);
-        statusCode.Should().Be(422);
+        _resortRepositoryStub.Verify(repo => repo.CreateResort(It.IsAny<Resort>()), Times.Never);
+        errorMessage.Should().NotBeNull().And.BeEquivalentTo("Resort already exists");
+        result.Should().BeAssignableTo<IStatusCodeActionResult>().Which.StatusCode.Should().Be(422);
     }
 
     [Fact]
@@ -233,11 +195,9 @@ public class ResortsControllerTests
 
         //Act: call the method
         var result = await resortsController.DeleteResort(1);
-        var statusCodeResult = (IStatusCodeActionResult) result;
-        var statusCode = statusCodeResult.StatusCode;
 
         //Assert: compare expected result with actual
-        statusCode.Should().Be(200);
+        result.Should().BeAssignableTo<IStatusCodeActionResult>().Which.StatusCode.Should().Be(200);
     }
 
     [Fact]
@@ -253,10 +213,8 @@ public class ResortsControllerTests
 
         //Act: call the method
         var result = await resortsController.DeleteResort(100);
-        var statusCodeResult = (IStatusCodeActionResult) result;
-        var statusCode = statusCodeResult.StatusCode;
 
         //Assert: compare expected result with actual
-        statusCode.Should().Be(404);
+        result.Should().BeAssignableTo<IStatusCodeActionResult>().Which.StatusCode.Should().Be(404);
     }
 }

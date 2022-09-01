@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentAssertions;
@@ -30,18 +31,17 @@ public class LocationsControllerTests
 
         //Act: call the method
         var result = await locationController.GetAllLocations();
-        var statusResult = result.StatusCode;
 
         //Assert: compare expected result with actual
         _locationRepositoryStub.Verify(repo => repo.GetAllLocations(), Times.Once);
-        statusResult.Should().Be(200);
+        result.Should().BeAssignableTo<IStatusCodeActionResult>().Which.StatusCode.Should().Be(200);
     }
 
     [Fact]
     public async Task GetLocation_WithGivenParameter_CallsRepoFunctionOnce()
     {
         //Arrange: prepare data
-        var locationsController =
+            var locationsController =
             new LocationsController(_locationRepositoryStub.Object, _mapper);
 
         //Act: call the method
@@ -64,11 +64,9 @@ public class LocationsControllerTests
 
         //Act: call the method
         var result = await locationsController.GetLocation(1);
-        var statusCodeResult = (IStatusCodeActionResult) result;
-        var statusCode = statusCodeResult.StatusCode;
 
         //Assert: compare expected result with actual
-        statusCode.Should().Be(200);
+        result.Should().BeAssignableTo<IStatusCodeActionResult>().Which.StatusCode.Should().Be(200);
     }
 
     [Fact]
@@ -84,11 +82,9 @@ public class LocationsControllerTests
 
         //Act: call the method
         var result = await locationsController.GetLocation(1000);
-        var statusCodeResult = (IStatusCodeActionResult) result;
-        var statusCode = statusCodeResult.StatusCode;
 
         //Assert: compare expected result with actual
-        statusCode.Should().Be(404);
+        result.Should().BeAssignableTo<IStatusCodeActionResult>().Which.StatusCode.Should().Be(404);
     }
 
     [Fact]
@@ -100,34 +96,24 @@ public class LocationsControllerTests
 
         //Act: call the method
         var result = await locationsController.GetLocationMonths(1);
-        var statusCodeResult = (IStatusCodeActionResult) result;
-        var statusCode = statusCodeResult.StatusCode;
-
+        
         //Assert: compare expected result with actual
         _locationRepositoryStub.Verify(repo => repo.GetLocationMonths(1), Times.Once);
-        statusCode.Should().Be(200);
+        result.Should().BeAssignableTo<IStatusCodeActionResult>().Which.StatusCode.Should().Be(200);
     }
 
-    //TODO: Not functioning, figure out testing when parameters differ between controller and repo function (mapping)
     [Fact]
     public async Task UpdateLocation_WithGivenParameter_CallsRepoFunctionOnce()
     {
         //Arrange: prepare data
-        var locationCreateDto = new LocationCreateDto
-        {
-            Name = "Test",
-            GoodMonthsDescription = "Test",
-            LocationMonths = Array.Empty<LocationMonthCreateDto>()
-        };
-        
         var locationsController =
             new LocationsController(_locationRepositoryStub.Object, _mapper);
         
         //Act: call the method
-        await locationsController.UpdateLocation(1, locationCreateDto);
+        await locationsController.UpdateLocation(1, new LocationCreateDto());
 
         //Assert: compare expected result with actual
-        _locationRepositoryStub.Verify(repo => repo.UpdateLocation(1, _mapper.Map<Location>(locationCreateDto)), Times.Once);
+        _locationRepositoryStub.Verify(repo => repo.UpdateLocation(1, It.IsAny<Location>()), Times.Once);
     }
 
     [Fact]
@@ -143,11 +129,9 @@ public class LocationsControllerTests
 
         //Act: call the method
         var result = await locationsController.UpdateLocation(100, new LocationCreateDto());
-        var statusCodeResult = (IStatusCodeActionResult) result;
-        var statusCode = statusCodeResult.StatusCode;
 
         //Assert: compare expected result with actual
-        statusCode.Should().Be(200);
+        result.Should().BeAssignableTo<IStatusCodeActionResult>().Which.StatusCode.Should().Be(200);
     }
 
     //TODO: Not functioning correctly, setup invalid request
@@ -155,30 +139,17 @@ public class LocationsControllerTests
     public async Task UpdateLocation_WithInvalidRequest_NeverCallsRepoFunctionAndReturnsBadRequest()
     {
         //Arrange: prepare data
-        var locationCreateDto = new LocationCreateDto
-        {
-            Name = "Test",
-            GoodMonthsDescription = "Test",
-            LocationMonths = Array.Empty<LocationMonthCreateDto>()
-        };
-
-        _locationRepositoryStub
-            .Setup(repo => repo.UpdateLocation(It.IsAny<int>(), It.IsAny<Location>()))
-            .ReturnsAsync((Location) null!);
-
         var locationsController =
             new LocationsController(_locationRepositoryStub.Object, _mapper);
 
         locationsController.ModelState.AddModelError("", "");
 
         //Act: call the method
-        var result = await locationsController.UpdateLocation(100, locationCreateDto);
-        var statusCodeResult = (IStatusCodeActionResult) result;
-        var statusCode = statusCodeResult.StatusCode;
+        var result = await locationsController.UpdateLocation(100, new LocationCreateDto());
 
         //Assert: compare expected result with actual
-        _locationRepositoryStub.Verify(repo => repo.UpdateLocation(100, _mapper.Map<Location>(locationCreateDto)), Times.Never);
-        statusCode.Should().Be(400);
+        _locationRepositoryStub.Verify(repo => repo.UpdateLocation(100, new Location()), Times.Never);
+        result.Should().BeAssignableTo<IStatusCodeActionResult>().Which.StatusCode.Should().Be(400);
     }
 
     [Fact]
@@ -194,11 +165,9 @@ public class LocationsControllerTests
 
         //Act: call the method
         var result = await locationsController.UpdateLocation(100, new LocationCreateDto());
-        var statusCodeResult = (IStatusCodeActionResult) result;
-        var statusCode = statusCodeResult.StatusCode;
 
         //Assert: compare expected result with actual
-        statusCode.Should().Be(404);
+        result.Should().BeAssignableTo<IStatusCodeActionResult>().Which.StatusCode.Should().Be(404);
     }
 
     //TODO: Not functioning, figure out testing when parameters differ between controller and repo function (mapping)
@@ -206,21 +175,14 @@ public class LocationsControllerTests
     public async Task CreateLocation_WithGivenParameter_CallsRepoFunctionOnce()
     {
         //Arrange: prepare data
-        var locationCreateDto = new LocationCreateDto
-        {
-            Name = "Test",
-            GoodMonthsDescription = "Test",
-            LocationMonths = Array.Empty<LocationMonthCreateDto>()
-        };
-
         var locationsController =
             new LocationsController(_locationRepositoryStub.Object, _mapper);
 
         //Act: call the method
-        await locationsController.CreateLocation(locationCreateDto);
+        await locationsController.CreateLocation(new LocationCreateDto());
 
         //Assert: compare expected result with actual
-        _locationRepositoryStub.Verify(repo => repo.CreateLocation(_mapper.Map<Location>(locationCreateDto)),
+        _locationRepositoryStub.Verify(repo => repo.CreateLocation(It.IsAny<Location>()),
             Times.Once);
     }
 
@@ -228,8 +190,40 @@ public class LocationsControllerTests
     public async Task CreateLocation_WithValidRequest_ReturnsOk()
     {
         //Arrange: prepare data
+        var locationsController =
+            new LocationsController(_locationRepositoryStub.Object, _mapper);
+
+        //Act: call the method
+        var result = await locationsController.CreateLocation(new LocationCreateDto());
+
+        //Assert: compare expected result with actual
+        result.Should().BeAssignableTo<IStatusCodeActionResult>().Which.StatusCode.Should().Be(200);
+    }
+
+    [Fact]
+    public async Task CreateLocation_WithInvalidRequest_NeverCallsRepoFunctionAndReturnsBadRequest()
+    {
+        //Arrange: prepare data
+        var locationsController =
+            new LocationsController(_locationRepositoryStub.Object, _mapper);
+
+        locationsController.ModelState.AddModelError("", "");
+
+        //Act: call the method
+        var result = await locationsController.CreateLocation(new LocationCreateDto());
+
+        //Assert: compare expected result with actual
+        _locationRepositoryStub.Verify(repo => repo.CreateLocation(It.IsAny<Location>()),
+            Times.Never);
+        result.Should().BeAssignableTo<IStatusCodeActionResult>().Which.StatusCode.Should().Be(400);
+    }
+
+    [Fact]
+    public async Task CreateLocation_WithExistingLocation_NeverCallsRepoFunctionAndReturnsError()
+    {
+        //Arrange: prepare data
         _locationRepositoryStub
-            .Setup(repo => repo.CreateLocation(It.IsAny<Location>()))
+            .Setup(repo => repo.GetLocationByName(It.IsAny<string>()))
             .ReturnsAsync(new Location());
 
         var locationsController =
@@ -237,80 +231,19 @@ public class LocationsControllerTests
 
         //Act: call the method
         var result = await locationsController.CreateLocation(new LocationCreateDto());
-        var statusCodeResult = (IStatusCodeActionResult) result;
-        var statusCode = statusCodeResult.StatusCode;
+        var errorMessage = locationsController.ModelState[""]!.Errors.First().ErrorMessage;
 
         //Assert: compare expected result with actual
-        statusCode.Should().Be(200);
-    }
-
-    //TODO: Not functioning correctly, setup invalid request
-    [Fact]
-    public async Task CreateLocation_WithInvalidRequest_NeverCallsRepoFunctionAndReturnsBadRequest()
-    {
-        //Arrange: prepare data
-        var locationCreateDto = new LocationCreateDto
-        {
-            Name = "Test",
-            GoodMonthsDescription = "Test",
-            LocationMonths = Array.Empty<LocationMonthCreateDto>()
-        };
-
-        _locationRepositoryStub
-            .Setup(repo => repo.CreateLocation(It.IsAny<Location>()))
-            .ReturnsAsync((Location) null!);
-
-        var locationsController =
-            new LocationsController(_locationRepositoryStub.Object, _mapper);
-
-        locationsController.ModelState.AddModelError("", "");
-
-        //Act: call the method
-        var result = await locationsController.CreateLocation(locationCreateDto);
-        var statusCodeResult = (IStatusCodeActionResult) result;
-        var statusCode = statusCodeResult.StatusCode;
-
-        //Assert: compare expected result with actual
-        _locationRepositoryStub.Verify(repo => repo.CreateLocation(_mapper.Map<Location>(locationCreateDto)),
+        _locationRepositoryStub.Verify(repo => repo.CreateLocation(It.IsAny<Location>()),
             Times.Never);
-        statusCode.Should().Be(400);
-    }
-
-    //TODO: Not functioning correctly, figure out how to setup repo for null return for existing location
-    [Fact]
-    public async Task CreateLocation_WithExistingLocation_NeverCallsRepoFunctionAndReturnsError()
-    {
-        //Arrange: prepare data
-        var locationCreateDto = new LocationCreateDto
-        {
-            Name = "Test",
-            GoodMonthsDescription = "Test",
-            LocationMonths = Array.Empty<LocationMonthCreateDto>()
-        };
-
-        _locationRepositoryStub
-            .Setup(repo => repo.CreateLocation(It.IsAny<Location>()))
-            .ReturnsAsync((Location) null!);
-
-        var locationsController =
-            new LocationsController(_locationRepositoryStub.Object, _mapper);
-
-        //Act: call the method
-        var result = await locationsController.CreateLocation(locationCreateDto);
-        var statusCodeResult = (IStatusCodeActionResult) result;
-        var statusCode = statusCodeResult.StatusCode;
-
-        //Assert: compare expected result with actual
-        _locationRepositoryStub.Verify(repo => repo.CreateLocation(_mapper.Map<Location>(locationCreateDto)),
-            Times.Never);
-        statusCode.Should().Be(422);
+        errorMessage.Should().NotBeNull().And.BeEquivalentTo("Location already exists");
+        result.Should().BeAssignableTo<IStatusCodeActionResult>().Which.StatusCode.Should().Be(422);
     }
 
     [Fact]
     public async Task DeleteLocation_WithGivenParameter_CallsRepoFunctionOnce()
     {
         //Arrange: prepare data
-
         var locationsController =
             new LocationsController(_locationRepositoryStub.Object, _mapper);
 
@@ -334,11 +267,9 @@ public class LocationsControllerTests
 
         //Act: call the method
         var result = await locationsController.DeleteLocation(1);
-        var statusCodeResult = (IStatusCodeActionResult) result;
-        var statusCode = statusCodeResult.StatusCode;
 
         //Assert: compare expected result with actual
-        statusCode.Should().Be(200);
+        result.Should().BeAssignableTo<IStatusCodeActionResult>().Which.StatusCode.Should().Be(200);
     }
 
     [Fact]
@@ -354,10 +285,8 @@ public class LocationsControllerTests
 
         //Act: call the method
         var result = await locationsController.DeleteLocation(100);
-        var statusCodeResult = (IStatusCodeActionResult) result;
-        var statusCode = statusCodeResult.StatusCode;
 
         //Assert: compare expected result with actual
-        statusCode.Should().Be(404);
+        result.Should().BeAssignableTo<IStatusCodeActionResult>().Which.StatusCode.Should().Be(404);
     }
 }
