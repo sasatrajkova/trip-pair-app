@@ -1,20 +1,16 @@
 import { locationDto } from "../Models/locationDto";
+import MonthCard from "./MonthCard";
 
 interface Props {
   location: locationDto;
 }
 
 const MonthInventory: React.FC<Props> = (props) => {
-    const { location } = props;
+  const { location } = props;
   return (
     <div className="pt-4 pb-2 px-2">
       {location.locationMonths.map((locationMonth) => (
-        <span
-          className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2"
-          key={locationMonth.month.id}
-        >
-          {locationMonth.month.name}
-        </span>
+        <MonthCard locationMonth={locationMonth} />
       ))}
     </div>
   );
